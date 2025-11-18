@@ -9,10 +9,11 @@ Working on this Project:
 ## Short Description:
 Temporal Graph Neural Network project analyzing how sentiment and truthfulness evolve in a social network over time. Uses enriched user interaction data to predict future user states and network structure changes on the TrueSocial platform.
 
+
+## Project: Temporal Trust & Sentiment Dynamics in TrueSocial Graph
 ## Steps to archive in the Project:
 
-🧠 Project: Temporal Trust & Sentiment Dynamics in TrueSocial Graph
-📌 Dataset
+### Dataset
 
 Source: TrueSocial platform
 Features:
@@ -23,7 +24,7 @@ Timestamp
 
 Social interactions (likes, subscriptions, replies, etc.)
 
-⚙️ Step 0 — Data Preparation
+### Step 0 — Data Preparation
 🔹 Define Node Feature Vector
 
 Each user (node) will have features derived from comments and interactions.
@@ -56,7 +57,7 @@ Select a subgraph (e.g., the largest connected component)
 
 Limit to a specific topic or time window
 
-🧩 Step 1 — Data Enrichment
+### Step 1 — Data Enrichment
 Add Model-Generated Labels per Comment
 
 Using LLM inference + prompt engineering:
@@ -75,7 +76,7 @@ Trust/truthfulness reputation score
 
 Weighted by interactions (likes, reposts, replies)
 
-🕸️ Step 2 — Temporal Graph Construction
+### Step 2 — Temporal Graph Construction
 
 For each timestamp period:
 
@@ -98,7 +99,7 @@ Likes (optional weighted edges)
 
 Graph evolves over time → Dynamic Graph Sequence
 
-🧪 Step 3 — Model Training
+### Step 3 — Model Training
 
 Approach: Temporal Graph Neural Network (TGNN)
 Example architectures:
@@ -119,7 +120,7 @@ Training signal:
 
 Compare next timestamp graph vs. model prediction
 
-📊 Step 4 — Model Evaluation & Analysis
+### Step 4 — Model Evaluation & Analysis
 
 Questions we aim to answer:
 
