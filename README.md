@@ -4,7 +4,7 @@ This is a project work for the TuHH Model:
 Deep Learning for Social Analytics
 
 Working on this Project:
--Johan Strunk
+-Johan Strunck
 -Vincent Ridder-Schipkowski
 ## Short Description:
 Temporal Graph Neural Network project analyzing how sentiment and truthfulness evolve in a social network over time. Uses enriched user interaction data to predict future user states and network structure changes on the TrueSocial platform.
