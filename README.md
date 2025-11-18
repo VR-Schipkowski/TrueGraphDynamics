@@ -25,56 +25,56 @@ Timestamp
 Social interactions (likes, subscriptions, replies, etc.)
 
 ### Step 0 — Data Preparation
-🔹 Define Node Feature Vector
+- Define Node Feature Vector
 
-Each user (node) will have features derived from comments and interactions.
+    - Each user (node) will have features derived from comments and interactions.
 
-🔹 Analyze Graph Connectivity
+- Analyze Graph Connectivity
 
-Number of users
+    - Number of users
 
-Active vs. inactive users
+    - Active vs. inactive users
 
-Interaction density
+    - Interaction density
 
-🔹 Clean Dataset
+- Clean Dataset
 
-Remove inactive users
+    - Remove inactive users
 
-Remove spam / low-information messages (optional)
+    - Remove spam / low-information messages (optional)
 
-🔹 Standardize Timestamps
+- Standardize Timestamps
 
-Convert timestamps to a consistent format
+    - Convert timestamps to a consistent format
 
-Choose granularity (daily / weekly snapshots)
+    - Choose granularity (daily / weekly snapshots)
 
-🔹 Graph Reduction for Prototyping
+- Graph Reduction for Prototyping
 
-Possible strategies:
+    - Possible strategies:
 
-Select a subgraph (e.g., the largest connected component)
+        - Select a subgraph (e.g., the largest connected component)
 
-Limit to a specific topic or time window
+        - Limit to a specific topic or time window
 
 ### Step 1 — Data Enrichment
-Add Model-Generated Labels per Comment
+- Add Model-Generated Labels per Comment
 
-Using LLM inference + prompt engineering:
+    - Using LLM inference + prompt engineering:
 
-Truthfulness Score (0–1)
+    - Truthfulness Score (0–1)
 
-Sentiment Score (e.g., -1 negative → +1 positive)
+    - Sentiment Score (e.g., -1 negative → +1 positive)
 
-User-Level Aggregation
+- User-Level Aggregation
 
-For each user:
+    - For each user:
 
-Average sentiment
+        - Average sentiment
 
-Trust/truthfulness reputation score
+        - Trust/truthfulness reputation score
 
-Weighted by interactions (likes, reposts, replies)
+    - Weighted by interactions (likes, reposts, replies)
 
 ### Step 2 — Temporal Graph Construction
 
