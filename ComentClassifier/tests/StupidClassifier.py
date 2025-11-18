@@ -1,6 +1,5 @@
 from pathlib import Path
 import sys
-# ensure project parent dir is importable so "from ComentClassifier import CommentClassifier" works
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from ComentClassifier import CommentClassifier
@@ -8,6 +7,8 @@ import pandas as pd
 import os
 
 class StupidClassifier(CommentClassifier):
+    """A simple classifier that labels comments as 'positive' if they contain the word 'good', else 'negative'.
+    It is used to test the CommentClassifier base class functionality."""
     def __init__(self, comments, labels=None):
         super().__init__(comments, labels)
 
