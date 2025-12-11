@@ -1,28 +1,35 @@
 # TrueGraphDynamics
 
-This is a project work for the TuHH Model:
+This is a project work for the TUHH Module:
 Deep Learning for Social Analytics
 
-Working on this Project:
--Johan Strunck
--Vincent Ridder-Schipkowski
-## Short Description:
-Temporal Graph Neural Network project analyzing how sentiment and truthfulness evolve in a social network over time. Uses enriched user interaction data to predict future user states and network structure changes on the TrueSocial platform.
+Team members:
+- Johann Strunck
+- Vincent Ridder-Schipkowski
+- Sargunpreet Kaur
+- Yunus Aras
 
+## Short Description:
+
+This project investigates the temporal evolution of user sentiment and perceived truthfulness in social networks using dynamic graph modeling. Leveraging data from the TrueSocial platform—comprising user comments, interactions, and timestamps—we construct time-resolved social graphs where nodes represent users enriched with features such as sentiment and truthfulness scores derived from natural language analysis, as well as interaction metrics (followers, likes, replies). Edges encode social relationships and interactions, allowing the network to evolve over discrete time intervals.
+
+We employ Temporal Graph Neural Networks (TGNNs), to model and predict user-level dynamics, such as changes in sentiment, trustworthiness, and future social connections. The framework enables the analysis of influence patterns, identification of clusters of low-truth or highly influential users, and detection of opinion shifts or potential misinformation cascades. By integrating temporal and relational information, this study aims to uncover the mechanisms driving trust and sentiment propagation in online social ecosystems.
 
 ## Project: Temporal Trust & Sentiment Dynamics in TrueSocial Graph
 ## Steps to archive in the Project:
 
 ### Dataset
 
-Source: TrueSocial platform
+Source: [TrueSocial platform ](zenodo.org/records/7531625)
 Features:
 
-Comments (text)
+- Comments (text)
 
-Timestamp
+- Timestamp
 
-Social interactions (likes, subscriptions, replies, etc.)
+- Social interactions (likes, subscriptions, replies, etc.)
+
+Comment: depending on the development of the project datasets from Twitter and Reddit might be aquired to use for training and testing purposes.
 
 ### Step 0 — Data Preparation
 - Define Node Feature Vector
@@ -43,91 +50,110 @@ Social interactions (likes, subscriptions, replies, etc.)
 
     - Remove spam / low-information messages (optional)
 
-- Standardize Timestamps
+    - convert emojis and hastags to usable tokens
+
+- Standardize Timestamps for TGNN
 
     - Convert timestamps to a consistent format
 
-    - Choose granularity (daily / weekly snapshots)
+    - Choose granularity (daily / weekly snapshots) of time intervals 
 
 - Graph Reduction for Prototyping
 
     - Possible strategies:
 
-        - Select a subgraph (e.g., the largest connected component)
+        - Select a subgraph (e.g., the largest connected component, subgraph with high connectivity)
 
         - Limit to a specific topic or time window
 
 ### Step 1 — Data Enrichment
 - Add Model-Generated Labels per Comment
 
-    - Using LLM inference + prompt engineering:
+    - Truthfulness Score (0–1):
 
-    - Truthfulness Score (0–1)
+        - Using LLM inference + prompt engineering
 
-    - Sentiment Score (e.g., -1 negative → +1 positive)
+        - Using the network architecturen of following [paper](https://dl.acm.org/doi/abs/10.1145/3137597.3137600) 
 
-- User-Level Aggregation
+    - Sentiment Classification
 
-    - For each user:
+        - following the fings of [this paper](https://arxiv.org/abs/1901.04856)
 
-        - Average sentiment
+        - decoding of sentiment vector into smaller feature vector 
 
-        - Trust/truthfulness reputation score
 
-    - Weighted by interactions (likes, reposts, replies)
 
 ### Step 2 — Temporal Graph Construction
 
 For each timestamp period:
 
-Nodes: users
-Node information vector includes:
+-   Nodes: users
 
-Sentiment history (time series)
+    - Node information vector includes (all being time series data):
 
-Truthfulness reputation
+        - Sentiment from written posts 
+            
+        - Sentiment from liked posts 
+            
+        - Truthfulness score from written posts 
 
-Degree + engagement features
+        - Truthfulness score from  liked posts 
 
-Edges:
+        - Followers 
 
-Subscription / follower relationships
+        - Following 
+            
+        - ...
 
-Reply or mention interactions
 
-Likes (optional weighted edges)
+- Edges:
 
-Graph evolves over time → Dynamic Graph Sequence
+    - Subscription / follower relationships
+
+    - Reply or mention interactions
+
+    - Graph evolves over time → Dynamic Graph Sequence
 
 ### Step 3 — Model Training
 
-Approach: Temporal Graph Neural Network (TGNN)
+Approach: 
+
+- Temporal Graph Neural Network (TGNN)
+
 Example architectures:
 
-Temporal Graph Attention Networks
+- Temporal Graph Attention Networks
 
-Recurrent GNNs
+- Recurrent GNNs
 
-Dynamic Graph Convolutions
+- Dynamic Graph Convolutions
 
-Goal: Predict temporal evolution
+Goal: 
 
-Changes in user sentiment/truthfulness
+- Predict:
+    - temporal evolution
 
-Future connections (link prediction)
+    - Changes in user sentiment/truthfulness
+
+    - Future connections (link prediction)
+
 
 Training signal:
 
-Compare next timestamp graph vs. model prediction
+- Compare next timestamp graph vs. model prediction
 
 ### Step 4 — Model Evaluation & Analysis
 
 Questions we aim to answer:
 
-Can the model predict future user state (sentiment & truthfulness)?
+- Can the model predict future user state (sentiment & truthfulness)?
 
-How strongly do neighbors influence a user’s trust and sentiment?
+- How strongly do neighbors influence a user’s trust and sentiment?
 
-Do clusters of low-truth users emerge over time?
+- Do clusters of low-truth users emerge over time?
 
-Can we detect opinion shifts or misinformation cascades?
+- Can we detect opinion shifts or misinformation cascades?
+
+- can we identify highly influencial people in terms of truthfullness?
+
+- is there a connection between the influence of a person on others and their sentiment?

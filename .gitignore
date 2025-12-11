@@ -1,2 +1,22 @@
 ComentClassifier/__pycache__/ComentClassifier.cpython-310.pyc
-key
+Data/OriginalData/.DS_Store
+Data/OriginalData/external_urls.tsv
+Data/OriginalData/follows.tsv
+Data/OriginalData/hashtags.tsv
+Data/OriginalData/media.tsv
+Data/OriginalData/quotes.tsv
+Data/OriginalData/readme.txt
+Data/OriginalData/replies.tsv
+Data/OriginalData/truth_external_url_edges.tsv
+Data/OriginalData/truth_hashtag_edges.tsv
+Data/OriginalData/truth_media_edges.tsv
+Data/OriginalData/truth_user_tag_edges.tsv
+Data/OriginalData/truths.tsv
+Data/OriginalData/users.tsv
+Data/OriginalData/.~lock.users.tsv#
+Data/ProcessedData/truths_cleaned.tsv
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
