@@ -15,3 +15,8 @@ Data/OriginalData/truths.tsv
 Data/OriginalData/users.tsv
 Data/OriginalData/.~lock.users.tsv#
 Data/ProcessedData/truths_cleaned.tsv
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
