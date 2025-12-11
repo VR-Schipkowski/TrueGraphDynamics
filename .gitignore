@@ -13,3 +13,5 @@ Data/OriginalData/truth_media_edges.tsv
 Data/OriginalData/truth_user_tag_edges.tsv
 Data/OriginalData/truths.tsv
 Data/OriginalData/users.tsv
+Data/OriginalData/.~lock.users.tsv#
+Data/ProcessedData/truths_cleaned.tsv
