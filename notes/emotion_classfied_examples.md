@@ -1,3 +1,13 @@
+# Emotion Detection on Truths
+
+I used the 
+
+this are random classifikation examples for each label, 
+from the first 2000 post in the truths_cleand.tsv Data.
+
+
+
+
 ANGER
 
 example 0 : THE DEMOCRATS..BLACK LIVES MATTER ARE ALL ON GODS RADAR<emoji: rage><emoji: fire><emoji: fire>

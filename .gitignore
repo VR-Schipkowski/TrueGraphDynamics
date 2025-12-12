@@ -21,3 +21,4 @@ __pycache__/
 *.py[cod]
 *$py.class
 Preperation/Enrichment/temp_progress/progress.json
+Preperation/Enrichment/temp_progress/progress.csv
