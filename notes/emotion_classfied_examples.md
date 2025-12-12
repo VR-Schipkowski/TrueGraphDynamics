@@ -1,9 +1,113 @@
 # Emotion Detection on Truths
 
-I used the 
+I used the model_name = "j-hartmann/emotion-english-distilroberta-base"@misc{hartmann2022emotionenglish,
+  author={Hartmann, Jochen},
+  title={Emotion English DistilRoBERTa-base},
+  year={2022},
+  howpublished = {\url{https://huggingface.co/j-hartmann/emotion-english-distilroberta-base/}},
+} to classify emotions on the Truth Sozial dataset.
+The model was trained on 6 emotion data sets and provides following labels:
+![alt text](image.png)
+
+
 
 this are random classifikation examples for each label, 
 from the first 2000 post in the truths_cleand.tsv Data.
+
+
+📊 Histogramm-Analyse
+
+Neutral dominiert stark, dicht gefolgt von Anger.
+
+Disgust, Sadness, Surprise sehr niedrig.
+
+Fear und Joy eher mittelmäßig.
+
+➡️ Das deutet auf eine starke Klassen-Ungleichverteilung hin.
+Viele seltene Labels könnten durch das Twitter-Modell nur ungenau zugewiesen worden sein.
+
+## 📝 Textbeispiele
+
+Viele Texte sind politisch aufgeladen, extrem lang, stark ideologisch, z. B. Bezug auf Trump, Clinton, Religion, apokalyptische Sprache.
+
+Das Twitter-trained Modell scheint emotionale Labels wie „Anger“ oder „Fear“ aus Emojis und starken Ausdrücken abzuleiten.
+
+Implizite Emotionen oder neutrale Kritik werden oft falsch als „Anger“ oder „Disgust“ klassifiziert.
+
+Viele Texte enthalten Verschwörungsthemen, politische Hashtags und religiöse Rhetorik, die in General-Datasets selten vorkommen.
+
+➡️ Zusammengefasst: Die Labels sind nicht optimal, die daten sind stark einseitig und brauchen eher gradueller aanalysen von wut, zb hate speach, threats,...
+
+## ⚠️ Probleme mit den Labels
+
+Domain Shift: General → Truth Social
+
+Lange Texte: Modell kennt keine langen, komplexen Argumentationen
+
+Ideologische Bias: Texte sind stark politisch; Modell könnte neutralen Text als extrem einstufen
+
+Seltene Labels: Disgust, Sadness, Surprise kaum repräsentiert → schlechtere Klassifikation
+
+#💡 Empfehlungen für bessere Modelle
+
+## Zero-Shot Large Language Models
+
+GPT-5, LLaMA-70B, Mistral-Large
+
+Flexibel bei längeren, ideologisch gefärbten Texten
+
+Labels explizit in Prompt angeben („Anger, Disgust, Fear, Joy, Neutral, Sadness, Surprise“)
+
+## Toxic / Hate-Speech Modelle mit Safe-Kategorie
+
+unitary/multilingual-toxic-xlm-roberta
+
+Labels: toxic, severe_toxic, threat, insult, identity_hate, non-toxic
+
+Gut für politische Extreme, Hass, Drohungen
+
+## Fine-Tuning auf Truth Social Daten
+
+Nur ein paar hundert annotierte Beispiele nötig
+
+Verbessert Accuracy für seltene, implizite Labels
+
+Kombiniert mit Zero-Shot kann sehr zuverlässig sein
+
+
+Beispiel für implizite Emotion oder neutrale Kritik, die falsch als „Anger“ klassifiziert werden könnte:
+
+Text (aus ANGER-Label, Beispiel 3):
+
+"Republicans are not your answer. They are all in it together with the Democrats. Just think about all the stuff they let happen to Trump! Having a few loyal republicans fighting for the people won’t change things. It would take a whole loyal party to make the changes that are needed now! One that is for God, Family, and Our Country First!"
+
+Analyse:
+
+Der Text enthält kritische, politische Analyse, keine direkten aggressiven Ausdrücke oder Hass.
+
+Emotionen sind implizit (Enttäuschung, Sorge, Frustration), nicht explizit Wut.
+
+Das Twitter-Modell interpretiert starke Sprache + Caps + politische Themen als „Anger“.
+
+Tatsächlich könnte man den Text eher als Neutral oder Fear / Concern labeln.
+
+Ein weiteres Beispiel:
+
+Text (FEAR-Label, Beispiel 3):
+
+"Some people say they are struggling to deal with inflation and gas prices and don’t want to hear about the 2020 stolen election. Yes, but it’s on account of that stolen election that you have Biden and the policies that are making your life so much harder #2000Mules"
+
+Der Text ist politisch und kritisierend, enthält aber keine direkte Wut.
+
+Das Twitter-Modell könnte „anger-like“ Elemente (Caps, Hashtags, politische Anklagen) falsch interpretieren.
+
+💡 Fazit:
+
+Implizite Emotionen: Frustration, Sorge, Enttäuschung → oft falsch als Wut/Disgust.
+
+Neutrale Kritik / Analyse → wird durch Caps, politische Begriffe, Hashtags „überdetektiert“.
+
+Wenn du willst, kann ich 5–10 weitere Beispiele aus deinem Dataset markieren, die wahrscheinlich f
 
 
 
