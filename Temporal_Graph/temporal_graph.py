@@ -123,7 +123,7 @@ class TemporalGraph:
                     line=line.split("\t")
                     self.nodes_dict[line[2]].following_edges.append(line[3])#TODO: this is not finished
                     
-                    unique_followers.append(line[3])
+                    unique_followers.append(line[2])
         elif filename.endswith(".csv"):
             print("the csv file format is not supportet right now")
         else:
@@ -195,8 +195,39 @@ class TemporalGraph:
             final_node_ids.extend(node_ids)
 
         return final_node_ids
+    
+    def check_if_followings_exist(self,change):
+        node_list=list(self.nodes_dict.keys())
+        change=False
+        for node_id in node_list:
+            for element in list(self.nodes_dict[node_id].following_edges):
+                if element not in node_list:
+                    self.nodes_dict[node_id].following_edges.remove(element)
+                    change =True
+        return change 
             
 
+    def clean_nodes(self,no_truths=True ,no_followings=True, repeat=True ):
+        print("cleaning nodes ...")
+        if repeat == True:
+            iteration_counter = 1
+            while repeat == True: 
+                print(f"{iteration_counter}. Iteration of cleaning ...")
+                iteration_counter+=1
+                for node_id in list(self.nodes_dict.keys()):
+                    if no_truths and len(self.nodes_dict[node_id].truths)==0:
+                        self.nodes_dict.pop(node_id)
+                    elif no_followings and len(self.nodes_dict[node_id].following_edges)==0:
+                        self.nodes_dict.pop(node_id)
+                repeat = self.check_if_followings_exist(repeat)
+        elif repeat == False:
+            for node_id in list(self.nodes_dict.keys()):
+                if no_truths and len(self.nodes_dict[node_id].truths)==0:
+                    self.nodes_dict.pop(node_id)
+                elif no_followings and len(self.nodes_dict[node_id].following_edges)==0:
+                    self.nodes_dict.pop(node_id)
+        #TODO: take into account if nodes are followers to diferent nodes 
+        print("nodes cleaned ...")
 
 #graph.create_nodes_from_file("truth_social/users.tsv")
 #graph.assign_truths_to_nodes()
