@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import unique
 import pandas as pd
+import regex as re
 
 class TimeIntervall:
     def __init__(self,time_data):
@@ -90,7 +91,11 @@ class TemporalGraph:
         self.create_follower_edges_from_file(follower_file)
         self.assign_truths_to_nodes(truths_file)
         self.time_intervall=self.create_timeintervall(time_intervall_file)
+        self.assign_follower_edges()
 
+        self.active_nodes=[]
+
+        
     def add_node(self,node_entry):
         node = Node(node_entry)
         if node.id in self.nodes_dict:
@@ -112,6 +117,21 @@ class TemporalGraph:
             print(f"the {filename.split(".")[-1]} file format is not supported ")
         print("done.")
 
+    def assign_follower_edges(self):
+        print("assigning following edges...")
+        node_ids = list(self.nodes_dict.keys())
+        counter=0
+        for node_id in node_ids:
+            for following_node_id in self.nodes_dict[node_id].following_edges:
+                #print(following_node_id)
+                #if str(following_node_id) in node_ids:
+                try:
+                    self.nodes_dict[following_node_id].follower_edges.append(node_id)
+                    #print(f"This is a match: {following_node_id}")
+                except:
+                    counter+=1
+        print(f"{counter} number of pars could not be connected")
+
     def create_follower_edges_from_file(self,filename):
         print("creating follower edges from file ...")
         if filename.endswith(".tsv"):
@@ -121,7 +141,7 @@ class TemporalGraph:
                 unique_followers=[]
                 for line in lines:
                     line=line.split("\t")
-                    self.nodes_dict[line[2]].following_edges.append(line[3])#TODO: this is not finished
+                    self.nodes_dict[line[2]].following_edges.append(re.sub(r"\D+", "",line[3] ))#TODO: this is not finished
                     
                     unique_followers.append(line[2])
         elif filename.endswith(".csv"):
@@ -215,19 +235,21 @@ class TemporalGraph:
                 print(f"{iteration_counter}. Iteration of cleaning ...")
                 iteration_counter+=1
                 for node_id in list(self.nodes_dict.keys()):
-                    if no_truths and len(self.nodes_dict[node_id].truths)==0:
+                    if no_truths and len(self.nodes_dict[node_id].truths)==0 :#and len(self.nodes_dict[node_id].follower_edges)==0
                         self.nodes_dict.pop(node_id)
-                    elif no_followings and len(self.nodes_dict[node_id].following_edges)==0:
+                    elif no_followings and len(self.nodes_dict[node_id].following_edges)==0 and len(self.nodes_dict[node_id].follower_edges)==0:
                         self.nodes_dict.pop(node_id)
                 repeat = self.check_if_followings_exist(repeat)
         elif repeat == False:
             for node_id in list(self.nodes_dict.keys()):
-                if no_truths and len(self.nodes_dict[node_id].truths)==0:
+                if no_truths and len(self.nodes_dict[node_id].truths)==0 :#and len(self.nodes_dict[node_id].follower_edges)==0
                     self.nodes_dict.pop(node_id)
-                elif no_followings and len(self.nodes_dict[node_id].following_edges)==0:
+                elif no_followings and len(self.nodes_dict[node_id].following_edges)==0 and len(self.nodes_dict[node_id].follower_edges)==0:
                     self.nodes_dict.pop(node_id)
         #TODO: take into account if nodes are followers to diferent nodes 
         print("nodes cleaned ...")
+
+    
 
 #graph.create_nodes_from_file("truth_social/users.tsv")
 #graph.assign_truths_to_nodes()
