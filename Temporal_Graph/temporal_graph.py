@@ -3,8 +3,9 @@ from enum import unique
 import pandas as pd
 import regex as re
 from pyvis.network import Network
-import networks as nx
+import networkx as nx
 import tqdm
+import random
 
 class TimeIntervall:
     def __init__(self,time_data):
@@ -252,25 +253,66 @@ class TemporalGraph:
         #TODO: take into account if nodes are followers to diferent nodes 
         print("nodes cleaned ...")
 
-    def create_pyvis_representation(self):
-        print("creating image of network...")
-        Graph=nx.DiGraph()
+    def create_pyvis_representation(self, sample_size=3000, visualize_scc=False):
+    
+        print("Creating directed graph from nodes_dict...")
+        Graph = nx.DiGraph()
+        
         for node_id in tqdm.tqdm(list(self.nodes_dict.keys())):
-            Graph.add_node(node_id)
-        for node_id in tqdm.tqdm(list(self.nodes_dict.keys())):
-            for following_node_id in list(self.nodes_dict[node_id].following_edges):
-                Graph.add_edge(node_id,following_node_id,arrows="to")
+            for following_node_id in self.nodes_dict[node_id].following_edges:
+                Graph.add_edge(node_id, following_node_id)
+        
+        print("Computing connectivity...")
 
-        net = Network(directed=True)
-        num_components = nx.number_connected_components(Graph)
-        print("Number of connected components:", num_components)
-        largest_cc = max(nx.connected_components(Graph), key=len)
-        print("Largest component:", largest_cc)
+        # Weak connectivity (ignores edge directions)
+        wcc = list(nx.weakly_connected_components(Graph))
+        num_wcc = len(wcc)
+        largest_wcc = max(wcc, key=len)
+        
+        print("Weak connectivity:")
+        print(f"Number of weakly connected components: {num_wcc}")
+        print(f"Largest component size: {len(largest_wcc)}")
+
+        # Strong connectivity (respects edge directions)
         scc = list(nx.strongly_connected_components(Graph))
-        print("Strongly connected components:", scc)
-        net.from_nx(Graph)
-        Graph.show("directed_graph.html")
-        print("image created")
-        print()
+        num_scc = len(scc)
+        largest_scc = max(scc, key=len)
+        
+        print("Strong connectivity:")
+        print(f"Number of strongly connected components: {num_scc}")
+        print(f"Largest SCC size: {len(largest_scc)}")
+
+        # If requested, visualize a manageable subgraph
+        if sample_size and sample_size < len(Graph):
+            print(f"Sampling {sample_size} nodes for visualization...")
+            sampled_nodes = random.sample(list(largest_wcc), min(sample_size, len(largest_wcc)))
+            subgraph = Graph.subgraph(sampled_nodes).copy()
+        else:
+            subgraph = Graph  # only safe if small
+        print("removing isolated vertices from subgraph...")
+        isolated_nodes = list(nx.isolates(subgraph))
+        subgraph.remove_nodes_from(isolated_nodes)
+        print("Creating PyVis network...")
+        net = Network(directed=True, notebook=False)
+        net.from_nx(subgraph)
+
+        # Performance optimization: disable physics
+        net.toggle_physics(True)
+
+        # Optional: visualize SCC condensation graph
+        if visualize_scc:
+            print("Creating condensation graph for SCC visualization...")
+            C = nx.condensation(Graph, scc)
+            net = Network(directed=True, notebook=False)
+            net.from_nx(C)
+            net.toggle_physics(True)
+
+        print("Writing HTML...")
+        net.write_html("directed_graph.html")
+        print("Visualization created (HTML saved).")
+        
+        return Graph, largest_wcc, largest_scc
+
+
 #graph.create_nodes_from_file("truth_social/users.tsv")
 #graph.assign_truths_to_nodes()
