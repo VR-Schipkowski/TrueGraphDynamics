@@ -2,6 +2,9 @@ from datetime import datetime
 from enum import unique
 import pandas as pd
 import regex as re
+from pyvis.network import Network
+import networks as nx
+import tqdm
 
 class TimeIntervall:
     def __init__(self,time_data):
@@ -249,7 +252,25 @@ class TemporalGraph:
         #TODO: take into account if nodes are followers to diferent nodes 
         print("nodes cleaned ...")
 
-    
+    def create_pyvis_representation(self):
+        print("creating image of network...")
+        Graph=nx.DiGraph()
+        for node_id in tqdm.tqdm(list(self.nodes_dict.keys())):
+            Graph.add_node(node_id)
+        for node_id in tqdm.tqdm(list(self.nodes_dict.keys())):
+            for following_node_id in list(self.nodes_dict[node_id].following_edges):
+                Graph.add_edge(node_id,following_node_id,arrows="to")
 
+        net = Network(directed=True)
+        num_components = nx.number_connected_components(Graph)
+        print("Number of connected components:", num_components)
+        largest_cc = max(nx.connected_components(Graph), key=len)
+        print("Largest component:", largest_cc)
+        scc = list(nx.strongly_connected_components(Graph))
+        print("Strongly connected components:", scc)
+        net.from_nx(Graph)
+        Graph.show("directed_graph.html")
+        print("image created")
+        print()
 #graph.create_nodes_from_file("truth_social/users.tsv")
 #graph.assign_truths_to_nodes()
