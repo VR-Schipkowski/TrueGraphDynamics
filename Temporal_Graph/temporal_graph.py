@@ -194,12 +194,15 @@ class TemporalGraph:
                 lines=lines[1:]
                 lines=[line.split("\t")[1] for line in lines]
                 lines = pd.to_datetime(lines, format='mixed', dayfirst=False,errors='coerce')
-                TimeIntervall(lines.to_pydatetime())
+                time_interval = TimeIntervall(lines.to_pydatetime())
+                print("done.")
+                return time_interval
         elif filename.endswith(".csv"):
             print("the csv file format is not supportet right now")
         else:
             print(f"the {filename.split(".")[-1]} file format is not supported ")
         print("done.")
+        return None
 
     def get_nodes_with_dist_n(self,n,node_id):
         """
