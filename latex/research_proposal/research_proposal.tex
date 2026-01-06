@@ -1,0 +1,163 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---------------- Packages ----------------
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{float}
+
+% ---------------- Formatting ----------------
+\setstretch{1.1}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+% ---------------- Document ----------------
+\begin{document}
+	
+	% ---------------- Title Page ----------------
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		
+		{\LARGE \textbf{Temporal Trust and Sentiment Dynamics in True Social Network}\par}
+		\vspace{2cm}
+		
+		{\large
+			\textbf{Team Name:} Group 3\par
+			\vspace{1.5cm}
+			
+			\textbf{Team Members}\par
+			\vspace{0.5cm}
+			
+			\begin{tabular}{ll}
+				Johann Strunck  & 54204\\
+				Vincent Ridder Schipkowski & 54912\\
+				Yunus Emre Aras & 21510628 \\
+				Sargunpreet Kaur & 639134 \\
+			\end{tabular}
+		}
+		
+		\vfill
+		
+		{\large
+			Course: Deep learning for Social Analytics\\
+			Research Proposal Submission\\
+			Deadline: December 17th
+		}
+		
+	\end{titlepage}
+	
+	% ---------------- Content ----------------
+	\section{Research Question / Objective}
+	This project investigates the temporal evolution of user sentiment and perceived truthfulness in social networks using dynamic graph modeling. Leveraging data from the TrueSocial platform comprising user comments, interactions, and timestamps we construct time resolved social graphs where nodes represent users enriched with features such as sentiment,ideological narratives and truthfulness scores derived from natural language analysis, as well as interaction metrics (followers, likes, replies). Edges encode social relationships and interactions, allowing the network to evolve over discrete time intervals.
+	
+	We employ Temporal Graph Neural Networks (TGNNs), to model and predict user-level dynamics, such as changes in sentiment, trustworthiness, and future social connections. The framework enables the analysis of influence patterns, identification of clusters of low-truth or highly influential users, and detection of opinion shifts or potential misinformation cascades. By integrating temporal and relational information, this study aims to uncover the mechanisms driving trust and sentiment propagation in online social ecosystems.
+	
+	
+	
+\section{Dataset}
+
+For this project, we use the dataset introduced by Gerard et al.~\cite{TruthSocialDataset2023}, which contains:
+\begin{enumerate}
+	\item 454,458 users
+	\item 4,002,115 follow relationships
+	\item 845,060 posts ("Truths")
+\end{enumerate}
+
+The user data includes the username, user ID, and timestamps for both the account creation and data scraping. Since the account creation dates are provided only at the month level often preceding the earliest posts in our dataset we use this file primarily to create the nodes of our temporal graph and enrich them with additional features such as follower and following counts. The follow relationships dataset is used to construct edges between nodes, with directed edges representing the "following" connections. Evaluation of the data shows that only 2,660 users follow others; therefore, to analyze the influence of users on truth scores and sentiment, we restrict our subgraphs to these active users.
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{0.32\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{follower_edgges_per_node.png}
+		\caption{Follower edges per node}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.32\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{following_edges_per_node.png}
+		\caption{Following edges per node}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.32\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{messages_per_node.png}
+		\caption{Messages per node}
+	\end{minipage}
+	\caption{Evaluation of graph structure}
+	\label{fig:three_images}
+\end{figure}
+
+Examining the overall network, we observe substantial variation among nodes in terms of follower counts, following behavior, and message activity (Figure~\ref{fig:three_images}). This heterogeneity reflects typical characteristics of social networks and makes the dataset suitable for analysis.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\textwidth]{graph.png}
+	\caption{Subgraph of active users}
+	\label{subgraph}
+\end{figure}
+
+As shown in Figure~\ref{subgraph}, many nodes are pointed to but do not point to others, resulting in low network density. Restricting the network to nodes that actively follow others provides sufficient structure for temporal graph analysis.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{truth_time_hist.png}
+	\caption{Histogram of posts per week}
+	\label{week_hist}
+\end{figure}
+
+To model the temporal graph, it is important to consider the variation in sentiment and truth scores over time. Figure~\ref{week_hist} shows the weekly message distribution, indicating generally consistent activity with moderate variation, making the dataset suitable for training temporal graph networks.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{sentiment_label_hist.png}
+	\caption{Sentiment label distribution of posts}
+\end{figure}
+
+The messages in the dataset are noisy, containing emojis, links, and informal language. A basic emotion classifier revealed that strong emotions are pervasive, and even posts labeled as neutral often contained heated content. 
+
+Consequently, emotion-based analysis is insufficient for Truth Social data, as affective signals such as anger do not meaningfully distinguish ideological narratives. Instead, we apply **unsupervised semantic clustering** on time-aggregated text per user. Posts are aggregated within fixed time windows, forming timestamp-level documents that capture dominant narratives.
+
+Each aggregated document is embedded using a pre-trained **Sentence-BERT** model without fine-tuning, preserving an exploratory and unbiased representation space. **UMAP** is then applied for dimensionality reduction to stabilize the embeddings, followed by **HDBSCAN** clustering to discover latent discourse communities without predefining the number of clusters.
+
+	
+	\section{Research Questions}
+The main research question that we want to follow is:Can the model predict future user state (sentiment and truthfulness)? On the way to answering the question we also hope to answer questions like:
+\begin{enumerate}
+	\item How strongly do neighbors influence a user’s trust and sentiment?
+	
+	\item Do clusters of low-truth users emerge over time?
+	
+	\item Can we detect opinion shifts or misinformation cascades?
+	
+	\item can we identify highly influencial people in terms of truthfullness?
+	
+	\item is there a connection between the influence of a person on others and their sentiment?
+	
+	\item how do user of different groups interact with each other?
+	
+\end{enumerate}
+
+	
+\section{Related Work}
+For our dataset, we rely on the information provided alongside the accompanying paper~\cite{gerard2023truth}, which introduces the Truth Social dataset. We use this metadata as the foundation for our analysis, following the preprocessing and organizational guidelines outlined by Gerard et al.~\cite{gerard2023truth}.
+
+For emotion classification, we follow the approach of Lykousas et al.~\cite{lykousas2019sharing}, who introduced the Vent dataset, a large-scale social media corpus annotated with emotional categories. Their work demonstrates the value of fine-grained emotion labels for understanding user-generated content at scale. 
+
+In addition, Shu et al.~\cite{shu2017fake} provide a comprehensive survey of fake news detection on social media, emphasizing the role of user behavior and content-based features in modeling complex social signals. Which can be used for the calculation of a truth score
+
+	
+	
+	\section{Relevance to Social Analytics}
+This project contributes to social analytics by modeling the temporal evolution of user sentiment and perceived truthfulness within social networks. By constructing time-resolved social graphs enriched with features such as sentiment, ideological narratives, truthfulness scores, and interaction metrics, we capture both behavioral and relational dynamics. Using Temporal Graph Neural Networks, we predict changes in user behavior, identify influential or low-truth clusters, and detect opinion shifts or potential misinformation cascades. Integrating temporal and relational information provides actionable insights into how trust and sentiment propagate in online communities, advancing the understanding of social influence and information flow.
+
+	
+	\bibliographystyle{plain}
+	\bibliography{references}
+	
+\end{document}
