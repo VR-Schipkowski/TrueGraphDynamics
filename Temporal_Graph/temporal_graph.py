@@ -7,6 +7,7 @@ import regex as re
 from pyvis.network import Network
 import networkx as nx
 import tqdm
+import numpy as np
 
 class TimeIntervall:
     def __init__(self,time_data,spltit_by="week"):
@@ -133,6 +134,7 @@ class Node:
                     #TODO: statement that catches -1 as timestamp 
                 counter+=1
 
+
 class TemporalGraph:
     def __init__(self,nodes_file="../Data/OriginalData/users.tsv",follower_file="../Data/OriginalData/follows.tsv",truths_file="../Data/OriginalData/truths.tsv",time_intervall_file="../Data/OriginalData/truths.tsv",emotion_csv="../Data/ProcessedData/enriched_comments_emotions.tsv"):
         """
@@ -154,7 +156,8 @@ class TemporalGraph:
         self.assign_truths_to_nodes(truths_file)
         self.assign_follower_edges()
         self.assign_emotion_to_truths(emotion_csv)
-        self.assign_hate_to_truth(hate_csv="../Data/ProcessedData/truth_cleaned_enriched.csv")
+        self.assign_hate_to_truth(hate_csv="../Data/ProcessedData/truth_cleand.csv")
+        self.flag_users()
         #self.assign_truth_to_truth(true_truth_csv="../Data/ProcessedData/truth_labels_prefilterd_gpt5.csv")
         self.active_nodes=[]
 
@@ -365,8 +368,16 @@ class TemporalGraph:
         print("assigning hate speech labels to truths ...")
         hate_df=pd.read_csv(hate_csv)
         hate_dict={}
+        SMT="NO_STMT"
+        if "NO_STMT" in hate_df.columns.tolist():
+            SMT="NO_STMT"
+        elif "NO_STATEMENT" in hate_df.columns.to_list():
+            SMT="NO_STATEMENT"
+        #elif "NO_SMT" in hate_df.columns.to_list():
+        #    SMT="NO_"
         for _, row in hate_df.iterrows():
-            hate_dict[str(row['id'])]=(row['hate_pred'],row['hate_prob'],row['sentiment_id'],row['sentiment_conf'],row['sentiment'],row['statement_flag'],row['statement_probability'],row["NO_STMT"],row["TRUE"],row["FALSE"])
+            
+            hate_dict[str(row['id'])]=(row['hate_pred'],row['hate_prob'],row['sentiment_id'],row['sentiment_conf'],row['sentiment'],row['statement_flag'],row['statement_probability'],row[str(SMT)],row["TRUE"],row["FALSE"],row["TRUTH_CLASS_x"])
         for node_id in tqdm.tqdm(list(self.nodes_dict.keys())):
             for truth_id in self.nodes_dict[node_id].truths:
                 try:
@@ -412,7 +423,13 @@ class TemporalGraph:
                         self.nodes_dict[node_id].truths[truth_id].FALSE=hate_dict[truth_id][9]  
                 except:
                     self.nodes_dict[node_id].truths[truth_id].FALSE="unknown"
-    
+                try:
+                    if hate_dict[truth_id][10] is not "":
+                        self.nodes_dict[node_id].truths[truth_id].TRUTH_CLASS_x=hate_dict[truth_id][10]  
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].TRUTH_CLASS_x="unknown"
+                    
+
     #def assign_truth_to_truth(self, true_truth_csv):
     #    print("assigning truth to truth relations ...")
     #    truth_relation_df=pd.read_csv(true_truth_csv)
@@ -433,3 +450,14 @@ class TemporalGraph:
                 for name, value in vars(self.nodes_dict[node_id].truths[truth_id]).items():
                      print(f"{name}: {value}")
         return None
+    
+    def flag_users(self):
+        for node_id in self.nodes_dict.keys():
+            false_clasification_counter = 0
+            self.nodes_dict[node_id].truthfullness_flag_array=np.zeros(len(self.nodes_dict[node_id].truths_in_time_intervall))
+            for counter,truth_at_timestemp in enumerate(self.nodes_dict[node_id].truths_in_time_intervall):
+                for truth_id in truth_at_timestemp:
+                    if self.nodes_dict[node_id].truths[truth_id].TRUTH_CLASS_x==1 or self.nodes_dict[node_id].truths[truth_id].TRUTH_CLASS_x=="1":
+                        false_clasification_counter+=1
+                if false_clasification_counter>=1:
+                    self.nodes_dict[node_id].truthfullness_flag_array[counter]=1 
