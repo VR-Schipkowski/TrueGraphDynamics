@@ -1,0 +1,88 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: research_proposal.aux
+Reallocating 'name_of_file' (item size: 1) to 6 items.
+The style file: plain.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+Database file #1: references.bib
+I was expecting a `,' or a `}'---line 34 of file references.bib
+ : 
+ : @article{gerard2023truth,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1049 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1049 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1049 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1049 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1049 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1049 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1049 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1049 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1090 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1090 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1090 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1090 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1090 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1090 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1090 of file plain.bst
+Too many commas in name 4 of "Lykousas, Nikolaos and Patsakis, Costantinos and Kaltenbrunner, Andreas and G{\'o}mez, Vicen{\c{c}}, booktitle = {Proceedings of the 13th International AAAI Conference on Web and Social Media (ICWSM)}, year = {2019}, pages = {–}, organization = {AAAI}, eprint = {1901.04856}, archivePrefix= {arXiv}, primaryClass = {cs.SI}, doi = {10.48550/arXiv.1901.04856}, url = {https://arxiv.org/abs/1901.04856}" for entry lykousas2019sharing
+while executing---line 1090 of file plain.bst
+Warning--empty booktitle in lykousas2019sharing
+Warning--empty year in lykousas2019sharing
+You've used 4 entries,
+            2118 wiz_defined-function locations,
+            519 strings with 4951 characters,
+and the built_in function-call counts, 1309 in all, are:
+= -- 116
+> -- 87
+< -- 0
++ -- 34
+- -- 30
+* -- 96
+:= -- 235
+add.period$ -- 12
+call.type$ -- 4
+change.case$ -- 27
+chr.to.int$ -- 0
+cite$ -- 6
+duplicate$ -- 41
+empty$ -- 91
+format.name$ -- 30
+if$ -- 258
+int.to.chr$ -- 0
+int.to.str$ -- 4
+missing$ -- 3
+newline$ -- 23
+num.names$ -- 8
+pop$ -- 34
+preamble$ -- 1
+purify$ -- 23
+quote$ -- 0
+skip$ -- 27
+stack$ -- 0
+substring$ -- 39
+swap$ -- 4
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 16
+warning$ -- 2
+while$ -- 10
+width$ -- 5
+write$ -- 43
+(There were 17 error messages)

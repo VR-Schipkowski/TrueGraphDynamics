@@ -1,14 +1,16 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from math import e
+from dateutil.relativedelta import relativedelta
 from enum import unique
 import pandas as pd
 import regex as re
 from pyvis.network import Network
 import networkx as nx
 import tqdm
-import random
+import numpy as np
 
 class TimeIntervall:
-    def __init__(self,time_data):
+    def __init__(self,time_data,spltit_by="week"):
         
         self.start_time = datetime(9999, 12, 31, 23, 59, 59) 
         self.end_time = datetime(1, 1, 1, 0, 0, 0)
@@ -21,6 +23,31 @@ class TimeIntervall:
             print(f"the time intervall of the data goes\nfrom: {self.start_time} \nto: {self.end_time}")
         except:
             print("Error there was an issue setting the time interall!!!")
+        self.generate_time_intervals(spltit_by)    
+
+    def generate_time_intervals(self,split_by):
+        if self.start_time >= self.end_time:
+            raise ValueError("start must be before end")
+        
+        step_map = {
+            "day": timedelta(days=1),
+            "week": timedelta(weeks=1),
+            "month": relativedelta(months=1),
+            "year": relativedelta(years=1),
+        }
+
+        if split_by not in step_map:
+            raise ValueError(f"Unsupported splting parameter: {split_by}")
+
+        step = step_map[split_by]
+        self.time_intervalls = []
+
+        current = self.start_time
+        while current < self.end_time:
+            next_time = current + step
+            self.time_intervalls.append((current, min(next_time, self.end_time)))
+            current = next_time
+        print(f"we have the following time intervalls{self.time_intervalls}")
 
 class Follower_Edge:
     #follows.tsv
@@ -31,19 +58,29 @@ class Follower_Edge:
 class Truth:
     def __init__(self,truth_entry):
         try:
-            self.timestamp= truth_entry[1]
+            try:
+                time = pd.to_datetime(truth_entry[1], format='mixed', dayfirst=False,errors='coerce')
+                self.timestamp = time.to_pydatetime()
+            except:
+                print(truth_entry[1])
+                self.timestamp = datetime(9999, 12, 31, 23, 59, 59) 
+            self.id = truth_entry[0]
             self.text = truth_entry[9]
-            self.like_count= truth_entry[6]
-            self.retruth_count= truth_entry[7]
-            self.reply_count= truth_entry[8]
+            self.like_count= int(truth_entry[6])
+            self.retruth_count= int(truth_entry[7])
+            self.reply_count= int(truth_entry[8])
         except:
             print("there was an error reading the following truth id:")
             print(truth_entry)
 class Node:
     #users.tsv
-    def __init__(self ,entry):
+    def __init__(self ,entry,time_intervalls):
         entry= entry.split("\t")
-        
+        self.time_intervalls=time_intervalls
+        self.truths_in_time_intervall=[]
+
+        for _  in self.time_intervalls.time_intervalls:
+            self.truths_in_time_intervall.append([])
         self.id=entry[0]
         self.timestamp=entry[1]
         self.time_scraped=entry[2]
@@ -53,12 +90,27 @@ class Node:
         self.follower_edges=[]
         self.following_edges=[]
         self.truths={}
+        #self.truths_at_timestemp={}
 
     def node_info(self):
-        print(f"Information about node {self.id}:")
-        print(f"Username: {self.username}")
-        print(f"follower count: {self.follower_count}")
-        print(f"following count: {self.following_count}")
+        #print(f"Information about node {self.id}:")
+        #print(f"Username: {self.username}")
+        #print(f"follower count: {self.follower_count}")
+        #print(f"following count: {self.following_count}")
+        #print(f"number of truths:{len(self.truths)}")
+        #counter=0
+        #for truth_ids in self.truths_in_time_intervall:
+        #    print(f"following nodes:{str(truth_ids)} are in the following time intervall:{str(self.time_intervalls.time_intervalls[counter])} ")
+        #    counter+=1
+        for name, value in vars(self).items():
+            print(f"{name}: {value}")
+        for truth_ids in self.truths_in_time_intervall:
+            for truth_id in truth_ids:
+                print(f"Details about truth id:{truth_id}")
+                for name, value in vars(self.truths[truth_id]).items():
+                     print(f"{name}: {value}")
+        
+        
         #print(f"following users: {self.following_edges}")
 
     def add_following_edge(self,edge_entry):
@@ -75,10 +127,16 @@ class Node:
 
     def add_truth(self,truth_entry):
             self.truths[truth_entry[0]]=Truth(truth_entry)
+            counter=0
+            for intervall in self.time_intervalls.time_intervalls:
+                if intervall[0] <= self.truths[truth_entry[0]].timestamp < intervall[1]: 
+                    self.truths_in_time_intervall[counter].append(self.truths[truth_entry[0]].id)#TODO:this needs to be the truth id
+                    #TODO: statement that catches -1 as timestamp 
+                counter+=1
 
 
 class TemporalGraph:
-    def __init__(self,nodes_file="../Data/OriginalData/users.tsv",follower_file="../Data/OriginalData/follows.tsv",truths_file="../Data/OriginalData/truths.tsv",time_intervall_file="../Data/OriginalData/truths.tsv"):
+    def __init__(self,nodes_file="../Data/OriginalData/users.tsv",follower_file="../Data/OriginalData/follows.tsv",truths_file="../Data/OriginalData/truths.tsv",time_intervall_file="../Data/OriginalData/truths.tsv",emotion_csv="../Data/ProcessedData/enriched_comments_emotions.tsv"):
         """
         Docstring for __init__
         
@@ -87,21 +145,28 @@ class TemporalGraph:
         :param follower_file: accepts either tsv or csv file of form #TODO:
         :param truth_file: accepts either tsv or csv file of form #TODO:
         :param time_intervall_file: accepts either tsv or csv file of form #TODO:
+        :param emotion_csv: accepts csv file with truth_id and emotion columns
         
 
         """
         self.nodes_dict={}
+        self.time_intervall=self.create_timeintervall(time_intervall_file)
         self.create_nodes_from_file(nodes_file)
         self.create_follower_edges_from_file(follower_file)
         self.assign_truths_to_nodes(truths_file)
-        self.time_intervall=self.create_timeintervall(time_intervall_file)
         self.assign_follower_edges()
-
+        self.assign_emotion_to_truths(emotion_csv)
+        self.assign_hate_to_truth(hate_csv="../Data/ProcessedData/truth_cleand.csv")
+        self.flag_users()
+        #self.assign_truth_to_truth(true_truth_csv="../Data/ProcessedData/truth_labels_prefilterd_gpt5.csv")
         self.active_nodes=[]
+
+        #self.nodes_dict[self.active_nodes[1]].node_info()
+            
 
         
     def add_node(self,node_entry):
-        node = Node(node_entry)
+        node = Node(node_entry,self.time_intervall)
         if node.id in self.nodes_dict:
             print("node already exists:"+node.id)
         else:
@@ -194,7 +259,9 @@ class TemporalGraph:
                 lines=lines[1:]
                 lines=[line.split("\t")[1] for line in lines]
                 lines = pd.to_datetime(lines, format='mixed', dayfirst=False,errors='coerce')
-                TimeIntervall(lines.to_pydatetime())
+                time_interval =TimeIntervall(lines.to_pydatetime())
+                return time_interval
+            
         elif filename.endswith(".csv"):
             print("the csv file format is not supportet right now")
         else:
@@ -253,66 +320,144 @@ class TemporalGraph:
         #TODO: take into account if nodes are followers to diferent nodes 
         print("nodes cleaned ...")
 
-    def create_pyvis_representation(self, sample_size=3000, visualize_scc=False):
-    
-        print("Creating directed graph from nodes_dict...")
-        Graph = nx.DiGraph()
-        
+    def create_pyvis_representation(self):
+        print("creating image of network...")
+        Graph=nx.DiGraph()
         for node_id in tqdm.tqdm(list(self.nodes_dict.keys())):
-            for following_node_id in self.nodes_dict[node_id].following_edges:
-                Graph.add_edge(node_id, following_node_id)
-        
-        print("Computing connectivity...")
+            Graph.add_node(node_id)
+        for node_id in tqdm.tqdm(list(self.nodes_dict.keys())):
+            for following_node_id in list(self.nodes_dict[node_id].following_edges):
+                Graph.add_edge(node_id,following_node_id,arrows="to")
 
-        # Weak connectivity (ignores edge directions)
-        wcc = list(nx.weakly_connected_components(Graph))
-        num_wcc = len(wcc)
-        largest_wcc = max(wcc, key=len)
-        
-        print("Weak connectivity:")
-        print(f"Number of weakly connected components: {num_wcc}")
-        print(f"Largest component size: {len(largest_wcc)}")
-
-        # Strong connectivity (respects edge directions)
+        net = Network(directed=True)
+        num_components = nx.number_connected_components(Graph)
+        print("Number of connected components:", num_components)
+        largest_cc = max(nx.connected_components(Graph), key=len)
+        print("Largest component:", largest_cc)
         scc = list(nx.strongly_connected_components(Graph))
-        num_scc = len(scc)
-        largest_scc = max(scc, key=len)
+        print("Strongly connected components:", scc)
+        net.from_nx(Graph)
+        Graph.show("directed_graph.html")
+        print("image created")
+        print()
+
+    def assign_emotion_to_truths(self,emotion_tsv):
+        print("assigning emotions to truths ...")
+        emotion_df=pd.read_csv(emotion_tsv,sep="\t")
         
-        print("Strong connectivity:")
-        print(f"Number of strongly connected components: {num_scc}")
-        print(f"Largest SCC size: {len(largest_scc)}")
+        emotion_dict={}
+        emotio_logits_dict={}
+        for _, row in emotion_df.iterrows():
+            emotion_dict[str(row['id'])]=row['emotion_label']
+            emotio_logits_dict[str(row['id'])]=row['emotion_label_logits']
+        #print(emotion_dict.keys())
+        for node_id in tqdm.tqdm(list(self.nodes_dict.keys())):
+            for truth_id in self.nodes_dict[node_id].truths.keys():
+                try:
 
-        # If requested, visualize a manageable subgraph
-        if sample_size and sample_size < len(Graph):
-            print(f"Sampling {sample_size} nodes for visualization...")
-            sampled_nodes = random.sample(list(largest_wcc), min(sample_size, len(largest_wcc)))
-            subgraph = Graph.subgraph(sampled_nodes).copy()
-        else:
-            subgraph = Graph  # only safe if small
-        print("removing isolated vertices from subgraph...")
-        isolated_nodes = list(nx.isolates(subgraph))
-        subgraph.remove_nodes_from(isolated_nodes)
-        print("Creating PyVis network...")
-        net = Network(directed=True, notebook=False)
-        net.from_nx(subgraph)
+                    self.nodes_dict[node_id].truths[truth_id].emotion=emotion_dict[truth_id]
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].emotion="unknown"
+                try:
+                    self.nodes_dict[node_id].truths[truth_id].emotion_logits=emotio_logits_dict[truth_id]
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].emotion_logits="unknown"
+        print("done.")
 
-        # Performance optimization: disable physics
-        net.toggle_physics(True)
+    def assign_hate_to_truth(self, hate_csv):
+        print("assigning hate speech labels to truths ...")
+        hate_df=pd.read_csv(hate_csv)
+        hate_dict={}
+        SMT="NO_STMT"
+        if "NO_STMT" in hate_df.columns.tolist():
+            SMT="NO_STMT"
+        elif "NO_STATEMENT" in hate_df.columns.to_list():
+            SMT="NO_STATEMENT"
+        #elif "NO_SMT" in hate_df.columns.to_list():
+        #    SMT="NO_"
+        for _, row in hate_df.iterrows():
+            
+            hate_dict[str(row['id'])]=(row['hate_pred'],row['hate_prob'],row['sentiment_id'],row['sentiment_conf'],row['sentiment'],row['statement_flag'],row['statement_probability'],row[str(SMT)],row["TRUE"],row["FALSE"],row["TRUTH_CLASS_x"])
+        for node_id in tqdm.tqdm(list(self.nodes_dict.keys())):
+            for truth_id in self.nodes_dict[node_id].truths:
+                try:
+                    self.nodes_dict[node_id].truths[truth_id].hate_speech_label=hate_dict[truth_id][0]
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].hate_speech_label="unknown"
+                try:
+                    self.nodes_dict[node_id].truths[truth_id].hate_speech_prob=hate_dict[truth_id][1]
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].hate_speech_prob="unknown"
+                try:    
+                    self.nodes_dict[node_id].truths[truth_id].sentiment_id=hate_dict[truth_id][2]
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].sentiment_id="unknown"
+                try:
+                    self.nodes_dict[node_id].truths[truth_id].sentiment_conf=hate_dict[truth_id][3]
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].sentiment_conf="unknown"  
+                try:
+                    self.nodes_dict[node_id].truths[truth_id].sentiment=hate_dict[truth_id][4]
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].sentiment="unknown"
+                try:
+                    self.nodes_dict[node_id].truths[truth_id].statement_flag=hate_dict[truth_id][5]
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].statement_flag="unknown"
+                try:    
+                    self.nodes_dict[node_id].truths[truth_id].statement_probability=hate_dict[truth_id][6]
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].statement_probability="unknown"
+                try:    
+                    if hate_dict[truth_id][7] is not "":
+                        self.nodes_dict[node_id].truths[truth_id].NO_STMT=hate_dict[truth_id][7]
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].NO_STMT="unknown"
+                try:
+                    if hate_dict[truth_id][8] is not "":
+                        self.nodes_dict[node_id].truths[truth_id].TRUE=hate_dict[truth_id][8]
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].TRUE="unknown"        
+                try:
+                    if hate_dict[truth_id][9] is not "":
+                        self.nodes_dict[node_id].truths[truth_id].FALSE=hate_dict[truth_id][9]  
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].FALSE="unknown"
+                try:
+                    if hate_dict[truth_id][10] is not "":
+                        self.nodes_dict[node_id].truths[truth_id].TRUTH_CLASS_x=hate_dict[truth_id][10]  
+                except:
+                    self.nodes_dict[node_id].truths[truth_id].TRUTH_CLASS_x="unknown"
+                    
 
-        # Optional: visualize SCC condensation graph
-        if visualize_scc:
-            print("Creating condensation graph for SCC visualization...")
-            C = nx.condensation(Graph, scc)
-            net = Network(directed=True, notebook=False)
-            net.from_nx(C)
-            net.toggle_physics(True)
+    #def assign_truth_to_truth(self, true_truth_csv):
+    #    print("assigning truth to truth relations ...")
+    #    truth_relation_df=pd.read_csv(true_truth_csv)
+    #    true_truth_labels={}
+    #    for index, row in truth_relation_df.iterrows():
+    #        true_truth_labels[str(row['id'])]=str(row['probabilities'])
+    #    for node_id in tqdm.tqdm(list(self.nodes_dict.keys())):
+    #        for truth_id in self.nodes_dict[node_id].truths:
+    #            try:
+    #                self.nodes_dict[node_id].truths[truth_id].probabilites=true_truth_labels[truth_id]
+    #            except:
+    #                self.nodes_dict[node_id].truths[truth_id].probabilites="unknown"
 
-        print("Writing HTML...")
-        net.write_html("directed_graph.html")
-        print("Visualization created (HTML saved).")
-        
-        return Graph, largest_wcc, largest_scc
 
-
-#graph.create_nodes_from_file("truth_social/users.tsv")
-#graph.assign_truths_to_nodes()
+    def find_truth(self,truth_id):
+        for node_id in self.nodes_dict.keys():
+            if truth_id in self.nodes_dict[node_id].truths.keys():
+                for name, value in vars(self.nodes_dict[node_id].truths[truth_id]).items():
+                     print(f"{name}: {value}")
+        return None
+    
+    def flag_users(self):
+        for node_id in self.nodes_dict.keys():
+            false_clasification_counter = 0
+            self.nodes_dict[node_id].truthfullness_flag_array=np.zeros(len(self.nodes_dict[node_id].truths_in_time_intervall))
+            for counter,truth_at_timestemp in enumerate(self.nodes_dict[node_id].truths_in_time_intervall):
+                for truth_id in truth_at_timestemp:
+                    if self.nodes_dict[node_id].truths[truth_id].TRUTH_CLASS_x==1 or self.nodes_dict[node_id].truths[truth_id].TRUTH_CLASS_x=="1":
+                        false_clasification_counter+=1
+                if false_clasification_counter>=1:
+                    self.nodes_dict[node_id].truthfullness_flag_array[counter]=1 
