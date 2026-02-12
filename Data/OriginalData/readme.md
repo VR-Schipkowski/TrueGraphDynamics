@@ -1,28 +1,3 @@
-##load and unsip the Truthe Social data set hear: https://zenodo.org/records/7531625
-
-in this folder this data should be presen
-users.tsv 
-
-truths.tsv 
-
-media.tsv 
-
-hashtags.tsv 
-
-external_urls.tsv 
-
-quotes.tsv 
-
-replies.tsv 
-
-follows.tsv 
-
-truth_media_edges.tsv 
-
-truth_hashtag_edges.tsv 
-
-truth_external_url_edges.tsv 
-
-truth_user_tag_edges.tsv 
-
-readme.txt
+version https://git-lfs.github.com/spec/v1
+oid sha256:b84be18c0571e4fcd1f384d3b6135dcf9cabc6b27ae212d8df79c53cc5bf5897
+size 386

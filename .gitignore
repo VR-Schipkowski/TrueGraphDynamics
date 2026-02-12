@@ -22,3 +22,9 @@ __pycache__/
 *$py.class
 Preperation/Enrichment/temp_progress/progress.json
 Preperation/Enrichment/temp_progress/progress.csv
+
+
+Temporal_Graph/best_model.pt
+Preperation/text_gnn_encoder.pkl  
+Temporal_Graph/best_temporal_truth_model.pt 
+Temporal_Graph/temp_trial_best.pt 
