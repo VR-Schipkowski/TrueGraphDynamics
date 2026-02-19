@@ -1,24 +1,24 @@
 \contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
-\contentsline {section}{\numberline {2}Data}{3}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Data Model and Graph Construction}{3}{subsection.2.1}%
+\contentsline {section}{\numberline {2}Data}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Data Model and Graph Construction}{2}{subsection.2.1}%
 \contentsline {paragraph}{Network Structure.}{3}{section*.2}%
-\contentsline {paragraph}{User Activity.}{4}{section*.3}%
-\contentsline {paragraph}{Temporal Activity.}{4}{section*.4}%
+\contentsline {paragraph}{User Activity.}{3}{section*.3}%
+\contentsline {paragraph}{Temporal Activity.}{3}{section*.4}%
 \contentsline {paragraph}{Preprocessing.}{4}{section*.6}%
 \contentsline {section}{\numberline {3}Baseline Models for False Statement Detection at the Post Level}{4}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Obtaining Labels}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.1}Obtaining Labels}{4}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Statement Classifier}{5}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Truth Classifier}{6}{subsection.3.3}%
-\contentsline {section}{\numberline {4}Empirical Characterization of Truthfulness Dynamics}{7}{section.4}%
+\contentsline {subsection}{\numberline {3.3}Truth Classifier}{5}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Empirical Characterization of Truthfulness Dynamics}{6}{section.4}%
 \contentsline {subsection}{\numberline {4.1}Temporal User-Level Truthfulness}{7}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Temporal Evolution of Untruthful Behavior}{8}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Structural Concentration}{8}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.2}Temporal Evolution of Untruthful Behavior}{7}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Structural Concentration}{7}{subsection.4.3}%
 \contentsline {subsection}{\numberline {4.4}Exposure and Transition Risk}{8}{subsection.4.4}%
 \contentsline {subsection}{\numberline {4.5}Summary of Empirical Findings}{9}{subsection.4.5}%
-\contentsline {section}{\numberline {5}Features}{10}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Post Level Features}{10}{subsection.5.1}%
+\contentsline {section}{\numberline {5}Features}{9}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Post Level Features}{9}{subsection.5.1}%
 \contentsline {subsubsection}{\numberline {5.1.1}Post Level Emotion Classifikation}{10}{subsubsection.5.1.1}%
-\contentsline {subsection}{\numberline {5.2}Text-to-Vector Transformation}{11}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.2}Text-to-Vector Transformation}{10}{subsection.5.2}%
 \contentsline {subsection}{\numberline {5.3}Behavioral Features}{11}{subsection.5.3}%
 \contentsline {subsubsection}{\numberline {5.3.1}Stylometric Clustering}{11}{subsubsection.5.3.1}%
 \contentsline {paragraph}{Visualization and Cluster Distribution}{11}{section*.12}%
@@ -27,20 +27,20 @@
 \contentsline {subsection}{\numberline {5.5}Topic Modeling and Labeling}{13}{subsection.5.5}%
 \contentsline {paragraph}{Feature Representation.}{13}{section*.15}%
 \contentsline {paragraph}{Topic Extraction.}{13}{section*.16}%
-\contentsline {paragraph}{Representative Posts and Labeling.}{14}{section*.17}%
-\contentsline {paragraph}{Dominant Topic Assignment.}{14}{section*.18}%
+\contentsline {paragraph}{Representative Posts and Labeling.}{13}{section*.17}%
+\contentsline {paragraph}{Dominant Topic Assignment.}{13}{section*.18}%
 \contentsline {paragraph}{Observations.}{14}{section*.21}%
 \contentsline {subsection}{\numberline {5.6}Feature Representation}{15}{subsection.5.6}%
 \contentsline {subsubsection}{\numberline {5.6.1}Numerical Encoding of Structured Features}{15}{subsubsection.5.6.1}%
 \contentsline {subsubsection}{\numberline {5.6.2}Feature Concatenation}{15}{subsubsection.5.6.2}%
-\contentsline {section}{\numberline {6}Temporal Graph Neural Network Architecture}{16}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Temporal User Representation}{16}{subsection.6.1}%
+\contentsline {section}{\numberline {6}Temporal Graph Neural Network Architecture}{15}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Temporal User Representation}{15}{subsection.6.1}%
 \contentsline {subsection}{\numberline {6.2}Graph-Based Propagation}{16}{subsection.6.2}%
 \contentsline {subsection}{\numberline {6.3}Prediction and Modeling Perspective}{16}{subsection.6.3}%
-\contentsline {section}{\numberline {7}Training and Experimental Setup}{17}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Optimization Procedure}{17}{subsection.7.1}%
+\contentsline {section}{\numberline {7}Training and Experimental Setup}{16}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Optimization Procedure}{16}{subsection.7.1}%
 \contentsline {subsection}{\numberline {7.2}Temporal Data Split}{17}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}Decision Threshold Selection}{18}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4}Evaluation Metrics}{18}{subsection.7.4}%
-\contentsline {section}{\numberline {8}Results}{18}{section.8}%
+\contentsline {subsection}{\numberline {7.3}Decision Threshold Selection}{17}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Evaluation Metrics}{17}{subsection.7.4}%
+\contentsline {section}{\numberline {8}Results}{17}{section.8}%
 \contentsline {section}{\numberline {9}Conclusion and Outlook}{20}{section.9}%

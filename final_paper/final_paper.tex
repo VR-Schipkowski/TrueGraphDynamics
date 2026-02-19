@@ -124,74 +124,41 @@
 	
 \section{Introduction}
 
-Online social platforms play a central role in shaping political
-discourse and information diffusion. A persistent and widely
-documented challenge within these environments is the rapid spread of
-false or misleading information, which can distort public discourse
-and reinforce polarization. While mainstream platforms have been
-extensively examined in this context, alternative networks with
-distinct moderation policies and ideologically concentrated user
-bases pose a particularly important challenge: how can moderation
-strategies be designed to promote and safeguard truthfulness in
-environments where governance is comparatively limited? Addressing
-this question requires models that can identify emerging untruthful
-behavior early, assess exposure-driven risks, and support scalable
-flagging mechanisms tailored to such settings.
-
-Truth Social, launched in 2022 by Trump Media \& Technology Group
-following the suspension of former U.S. President Donald J. Trump
-from major platforms after the January 6 United States Capitol attack,
-positions itself as an alternative network emphasizing limited content
-moderation and political expression. Such governance structures raise
-important questions about how truthfulness can be maintained in
-environments where regulatory intervention is comparatively
-constrained. Rather than merely characterizing behavioral dynamics,
-our objective is to examine how data-driven moderation frameworks can
-be developed to detect, flag, and ultimately mitigate the spread of
-false information in these settings. By analyzing how untruthful
-behavior emerges, clusters, and propagates through the follower
-network, we aim to inform the design of network-aware monitoring and
-early-warning systems capable of supporting scalable truthfulness
-guarantees in politically polarized online communities.
 
 
-In this work, we analyze temporal truthfulness dynamics within a
-large-scale Truth Social follower network. We construct a rolling
-user-level truthfulness measure and empirically demonstrate wave-like
-growth patterns, localized structural clustering, and strong
-exposure-dependent transition risks. These findings suggest that the
-spread of untruthful content is neither random nor isolated, but
-structured and temporally persistent, underscoring the need for
-models that jointly capture content, time, and network exposure.
+Social media can be conceptualized as a digitally mediated social space in which individuals
+and groups interact, exchange information, and construct identities. Unlike traditional mass media,
+these platforms enable many-to-many communication, allowing users 
+to simultaneously act as content creators, distributors, and consumers within a decentralized 
+and participatory ecosystem. In order to maintain a trustworthy and non-discriminatory environment,
+content moderation has become a central and ongoing concern for platform operators.
+However, the rapid dissemination and algorithmic amplification of
+content also create conditions in which untruthful postings can spread widely before they are 
+detected or corrected. Such content can distort public discourse, undermine trust, and pose significant
+challenges for effective moderation and automated classification systems.
 
-Motivated by these observations, we propose a Temporal Graph Neural
-Network (TGNN) that integrates semantic text embeddings, recurrent
-temporal state updates, and follower-network aggregation. Beyond
-predictive accuracy, our framework is designed to support moderation
-objectives by identifying high-risk users, estimating exposure-driven
-escalation probabilities, and enabling scalable flagging strategies.
-We evaluate the model under two settings: a non-autoregressive
-configuration that excludes prior truthfulness labels, and an
-autoregressive variant that includes them. The non-autoregressive
-model achieves strong predictive performance, indicating that
-structural and semantic signals alone provide substantial information
-about emerging untruthful behavior. Incorporating prior labels further
-improves performance, revealing strong temporal persistence that can
-be leveraged for proactive monitoring.
+The social media platform Truth Social was launched in February 2022 by former U.S. president Donald Trump
+and his Trump Media \& Technology Group as an alternative to mainstream networks following his bans
+from those platforms after the January 6 Capitol attack. It was marketed as a “free speech” space meant
+to welcome users who felt censored by larger platforms, yet its content moderation policies have been
+inconsistent and at times more permissive of extreme or misleading content than those of comparable 
+services.
 
-Together, our findings demonstrate how content characteristics,
-network exposure, and temporal dependence jointly shape the dynamics
-of untruthful information diffusion in politically polarized online
-environments. Beyond descriptive insights, this work advances a
-model-driven framework for proactive moderation in such settings.
-By integrating structural, semantic, and temporal signals, our
-approach enables scalable identification of high-risk users and
-exposure-driven escalation patterns, thereby supporting targeted
-flagging and early intervention strategies. More broadly, our results
-contribute to the development of network-aware moderation systems
-designed to strengthen information integrity and promote sustained
-truthfulness in alternative social media ecosystems.
 
+In this paper, we investigate methods to restore informational integrity within highly polarized and 
+hostility-prone online networks. Our initial baseline approach relied on post-level flagging to classify 
+untruthful behavior, yielding limited success. Given access to the structural properties of the underlying
+social network, we subsequently examined the expressive power of network topology in identifying users
+who disseminate false statements. This led to the development of a rolling, user-level truthfulness
+measure, shifting the focus from individual posts to longitudinal user behavior.
+
+
+Evaluation of this network-based approach demonstrated that interaction patterns between users contain
+significant signals related to the emergence and reinforcement of untruthful behavior.
+Building on these findings, we explored a temporal graph neural network framework to model
+the dynamic evolution of user interactions. To enrich the model’s contextual understanding, 
+we incorporated comment-level feature engineering, extracting categorical, sentiment, engagement,
+and clustering attributes, which were then used to predict user-level truthfulness at each time step.
 
 
 
