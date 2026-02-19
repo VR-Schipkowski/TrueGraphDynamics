@@ -8,3 +8,4 @@ Data/OriginalData/ filter=lfs diff=lfs merge=lfs -text
 Data/ProcessedData/ filter=lfs diff=lfs merge=lfs -text
 Data/OriginalData/* filter=lfs diff=lfs merge=lfs -text
 Data/ProcessedData/* filter=lfs diff=lfs merge=lfs -text
+Data/OriginalData/truthsocial_features_new.csv filter=lfs diff=lfs merge=lfs -text

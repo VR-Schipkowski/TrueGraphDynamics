@@ -232,8 +232,6 @@ class TemporalGraph:
                 user_node.truth_flag_intervall[i] = min(true_count / 3.0,1.0)
 
 
-
-
 import torch
 import torch.nn as nn
 
@@ -242,25 +240,21 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # -----------------------------------
 # CONFIG
 # -----------------------------------
-USE_PAST_Y = True      # set False to hide truth_flag[t-1]
+USE_PAST_Y = True
 COMMENT_HIDDEN = 128
 USER_HIDDEN = 128
-LR = 1e-3
-EPOCHS = 20
 
 
-# -----------------------------------
+# =====================================================
 # COMMENT ENCODER
-# -----------------------------------
+# =====================================================
 class CommentEncoder(nn.Module):
     def __init__(self, comment_dim, hidden_dim):
         super().__init__()
         self.gru = nn.GRU(comment_dim, hidden_dim, batch_first=True)
 
     def forward(self, comments):
-        """
-        comments: list[Comment]
-        """
+
         if len(comments) == 0:
             return None
 
@@ -269,9 +263,9 @@ class CommentEncoder(nn.Module):
         return h.squeeze(0)
 
 
-# -----------------------------------
+# =====================================================
 # USER TEMPORAL ENCODER
-# -----------------------------------
+# =====================================================
 class UserTemporalEncoder(nn.Module):
     def __init__(self, in_dim, hidden_dim):
         super().__init__()
@@ -281,19 +275,21 @@ class UserTemporalEncoder(nn.Module):
         return self.gru(x_t, h_prev)
 
 
-# -----------------------------------
-# GRAPH AGGREGATION (USES outgoing_edges)
-# -----------------------------------
-class GraphAggregator(nn.Module):
+# =====================================================
+# GRAPH SAGE (Mean Aggregation)
+# =====================================================
+class GraphSAGEAggregator(nn.Module):
     def __init__(self, hidden_dim):
         super().__init__()
         self.self_lin = nn.Linear(hidden_dim, hidden_dim)
         self.neigh_lin = nn.Linear(hidden_dim, hidden_dim)
 
     def forward(self, user_states, temporal_graph):
+
         new_states = {}
 
         for u_id, u_node in temporal_graph.user_nodes.items():
+
             self_msg = self.self_lin(user_states[u_id])
 
             neigh_states = [
@@ -314,23 +310,81 @@ class GraphAggregator(nn.Module):
         return new_states
 
 
+# =====================================================
+# GRAPH ATTENTION NETWORK (Single-Head)
+# =====================================================
+class GraphGATAggregator(nn.Module):
+    def __init__(self, hidden_dim):
+        super().__init__()
 
-# -----------------------------------
+        self.W = nn.Linear(hidden_dim, hidden_dim, bias=False)
+        self.attn = nn.Linear(2 * hidden_dim, 1, bias=False)
+        self.leaky_relu = nn.LeakyReLU(0.2)
+
+    def forward(self, user_states, temporal_graph):
+
+        new_states = {}
+
+        # Linear transform for all nodes
+        Wh = {
+            u: self.W(h)
+            for u, h in user_states.items()
+        }
+
+        for u_id, u_node in temporal_graph.user_nodes.items():
+
+            h_u = Wh[u_id]
+
+            neigh_ids = [
+                str(v.user_id)
+                for v in u_node.outgoing_edges
+            ]
+
+            if len(neigh_ids) == 0:
+                new_states[u_id] = torch.relu(h_u)
+                continue
+
+            attn_scores = []
+            neigh_feats = []
+
+            for v_id in neigh_ids:
+
+                h_v = Wh[v_id]
+                concat = torch.cat([h_u, h_v], dim=0)
+                e_uv = self.leaky_relu(self.attn(concat))
+
+                attn_scores.append(e_uv)
+                neigh_feats.append(h_v)
+
+            attn_scores = torch.stack(attn_scores)      # (N,1)
+            alpha = torch.softmax(attn_scores, dim=0)   # attention weights
+
+            neigh_feats = torch.stack(neigh_feats)      # (N, hidden)
+            h_neigh = torch.sum(alpha * neigh_feats, dim=0)
+
+            new_states[u_id] = torch.relu(h_neigh)
+
+        return new_states
+
+
+# =====================================================
 # FULL TEMPORAL MODEL
-# -----------------------------------
+# =====================================================
 class TemporalTruthModel(nn.Module):
     def __init__(
         self,
         comment_dim,
         use_past_y=True,
         use_graph=True,
-        use_comments=True
+        use_comments=True,
+        graph_type="sage"   # <---- NEW SWITCH
     ):
         super().__init__()
 
         self.use_past_y = use_past_y
         self.use_graph = use_graph
         self.use_comments = use_comments
+        self.graph_type = graph_type
 
         past_y_dim = 1 if use_past_y else 0
 
@@ -343,16 +397,25 @@ class TemporalTruthModel(nn.Module):
             USER_HIDDEN
         )
 
-        self.graph_agg = GraphAggregator(USER_HIDDEN)
+        # -------- Graph Layer Selection --------
+        if graph_type == "sage":
+            self.graph_agg = GraphSAGEAggregator(USER_HIDDEN)
+        elif graph_type == "gat":
+            self.graph_agg = GraphGATAggregator(USER_HIDDEN)
+        else:
+            raise ValueError("graph_type must be 'sage' or 'gat'")
+
         self.classifier = nn.Linear(USER_HIDDEN, 1)
 
 
+    # =================================================
+    # Forward Full Sequence
+    # =================================================
     def forward(self, temporal_graph):
 
         T = len(temporal_graph.time_intervall.time_intervalls)
         user_ids = list(temporal_graph.user_nodes.keys())
 
-        # initialize hidden states
         user_states = {
             u: torch.zeros(USER_HIDDEN, device=DEVICE)
             for u in user_ids
@@ -363,15 +426,12 @@ class TemporalTruthModel(nn.Module):
 
         for t in range(T):
 
-            # -------- TEMPORAL UPDATE --------
             for u in user_ids:
 
                 node = temporal_graph.user_nodes[u]
                 comments = node.comments_in_intervall[t]
 
-                # ------------------------------
-                # 1️⃣ Comment encoder (optional)
-                # ------------------------------
+                # ---- Comment encoder ----
                 if self.use_comments:
                     h_c = self.comment_encoder(comments)
                     if h_c is None:
@@ -379,12 +439,9 @@ class TemporalTruthModel(nn.Module):
                     else:
                         h_c = h_c.view(-1)
                 else:
-                    # if disabled → zero input
                     h_c = torch.zeros(COMMENT_HIDDEN, device=DEVICE)
 
-                # ------------------------------
-                # 2️⃣ Past y (optional)
-                # ------------------------------
+                # ---- Past y ----
                 if self.use_past_y:
                     prev_y = node.truth_flag_intervall[t-1] if t > 0 else 0.0
                     prev_y_tensor = torch.tensor(
@@ -394,22 +451,16 @@ class TemporalTruthModel(nn.Module):
                 else:
                     x_t = h_c
 
-                # GRU update
                 user_states[u] = self.user_encoder(
                     x_t, user_states[u]
                 )
 
-            # ------------------------------
-            # 3️⃣ Graph aggregation (optional)
-            # ------------------------------
+            # ---- Graph Layer ----
             if self.use_graph:
                 user_states = self.graph_agg(
                     user_states, temporal_graph
                 )
 
-            # ------------------------------
-            # 4️⃣ Classification
-            # ------------------------------
             logits = torch.stack([
                 self.classifier(user_states[u]).squeeze()
                 for u in user_ids
@@ -430,6 +481,10 @@ class TemporalTruthModel(nn.Module):
 
         return all_logits, all_labels
 
+
+    # =================================================
+    # One Step (used in training)
+    # =================================================
     def forward_one_step(self, temporal_graph, t, user_states):
 
         user_ids = list(temporal_graph.user_nodes.keys())
@@ -439,7 +494,6 @@ class TemporalTruthModel(nn.Module):
             node = temporal_graph.user_nodes[u]
             comments = node.comments_in_intervall[t]
 
-            # comment encoding
             if self.use_comments:
                 h_c = self.comment_encoder(comments)
                 if h_c is None:
@@ -449,7 +503,6 @@ class TemporalTruthModel(nn.Module):
             else:
                 h_c = torch.zeros(COMMENT_HIDDEN, device=DEVICE)
 
-            # past y
             if self.use_past_y:
                 prev_y = node.truth_flag_intervall[t-1] if t > 0 else 0.0
                 prev_y_tensor = torch.tensor(
@@ -463,11 +516,11 @@ class TemporalTruthModel(nn.Module):
                 x_t, user_states[u]
             )
 
-        # graph propagation
         if self.use_graph:
-            user_states = self.graph_agg(user_states, temporal_graph)
+            user_states = self.graph_agg(
+                user_states, temporal_graph
+            )
 
-        # classification
         logits = torch.stack([
             self.classifier(user_states[u]).squeeze()
             for u in user_ids
@@ -484,4 +537,3 @@ class TemporalTruthModel(nn.Module):
         )
 
         return logits, labels, user_states
-

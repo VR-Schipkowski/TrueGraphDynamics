@@ -1,3 +1,2 @@
-threshold,use_past_y,use_graph,use_comments,best_macro_f1
-0.5,False,True,True,0.7922941331983671
-0.3,False,True,True,0.7621185247384203
+trial,threshold,use_past_y,use_graph,use_comments,precision_class_1,recall_class_1,precision_class_0,recall_class_0,f1_class_1,f1_class_0,macro_f1,accuracy
+1,0.35,False,True,True,0.698296836977305,0.7546012269872516,0.9833084947833184,0.9779450998986317,0.7253580404942376,0.9806194587649856,0.8529887496296116,0.9637938737869263
