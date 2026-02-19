@@ -278,6 +278,9 @@ After filtering, all retained users are embedded in a structurally
 connected subgraph and associated with temporally valid activity 
 records. The resulting dataset forms the basis for subsequent analysis.
 
+\section{Baseline Model}
+
+
 \subsection{Obtaining Labels}
 
 For our task, we required classification labels for individual social media posts.
@@ -294,10 +297,6 @@ Using these weak labels, we trained binary classefier based on a BERT-based unca
 The classifier achieved a precision of $P = 003$ with a recall $R = 0.89$
 for the statment class. We then used the classefier to predikt all post, only considdering the predikted statments to further classifikation by the high level LLM. Resulting in a reducktion of of about $82\%$.
 With that we were able to lable the hole data set for 60 euros.
-
-\section{Feature Engineering}
-\subsection{Post Level Features}
-In this subsection we introduced features obtained on single post level, additionaly to the statment certenty resulting frome the statment classefier.
 
 \subsubsection{Text Level Trutfullnes distribution}
 We trained as a baseline a false statement classifier to predict whether a statement is false or belongs to another category. To generate training labels, we first prefiltered posts using a statement classifier and then used ChatGPT to produce soft probabilistic outputs for each post. Specifically, ChatGPT returned a probability distribution over the three classes: \texttt{FALSE}, \texttt{TRUE}, and \texttt{NO\_STATEMENT}. These soft labels were used to fine-tune a transformer-based sequence classification model (DeBERTa-v3-base) for three-class classification.
@@ -316,100 +315,12 @@ To flag a statement as false, we applied a threshold on the predicted false prob
 \end{figure}
 
 As a feature we used the post level distribution.
-\subsubsection{Post Level Emotion Classifikation}
 
-\begin{figure}[!h]
-	\centering
-	\includegraphics[width=0.8\linewidth]{pictures_vincent/emotion.png}
-	\caption{Distribution of Emotions Among Posts Classified as Statements}
-	\label{fig:emotion}
-\end{figure}
-Emotion-Based Feature Enrichment
-To further enrich the post-level feature set, we apply a pretrained emotion classifier \cite{hartmann2022emotionenglish} to each post, assigning one of seven discrete emotion labels: neutral, anger, fear, joy, surprise, sadness, and disgust. As shown in the left panel of Figure \ref{fig:emotion} , the corpus is heavily skewed toward neutral expressions ($~37\%$)
-The right panel reveals a striking pattern in the conditional false-statement rate P(FALSE | Emotion): emotionally charged categories exhibit substantially elevated misinformation rates compared to neutral content. Anger yields the highest false rate ($~16.5\%$), followed by surprise ($~14\%$) and disgust ($~14\%$), whereas joy and neutral posts show the lowest rates ($~5.5\%$ and $~10.5\%$, respectively). 
-This suggests a clear association between affective arousal and factual inaccuracy, making the predicted emotion label — alongside its confidence scores across all seven classes — a theoretically motivated and empirically supported feature for downstream false-statement classification.
-%To enrich the raw Truth Social dataset, we implemented additional feature extraction pipelines in the following Jupyter notebooks: \texttt{truthsocial\_stylometry\_and\_temporal\_features.ipynb} and \texttt{truthsocial\_topic\_modeling\_and\_labeling.ipynb}. The final processed data set includes both metadata and the derived behavioral, stylistic, and semantic features.
 
-% ----------------------------------------------------
-\subsection{Behavioral Features}
 
-Behavioral modeling was decomposed into three dimensions: writing style, temporal rhythm, and activity intensity.
 
-% ------------------------
-\subsubsection{Stylometric Clustering}
 
-To capture writing style independent of topic, we used character-level TF-IDF representations (3–5 grams), preserving casing to retain stylistic signals such as punctuation, capitalization, and emoji usage.
 
-The sparse TF-IDF matrix was reduced using Truncated SVD ($50$ components) and L2-normalized to operate in cosine space. Silhouette evaluation over $k \in \{4,\dots,9\}$ selected $k=5$ (0.182) as the optimal number of clusters. K-means was applied to obtain the final \texttt{style\_cluster}.
-
-\paragraph{Visualization and Cluster Distribution}
-
-The stylometric embedding was projected into two dimensions using PCA (Figure~\ref{fig:stylometry_pca}), revealing partially separable stylistic regions with expected overlap in high-dimensional linguistic data. 
-
-The cluster distribution (Figure~\ref{fig:stylometry_hist}) shows one dominant writing style, two moderately represented groups, and two smaller clusters capturing rare or outlier stylistic patterns. Overall, while stylistic variation exists, a prevailing communication norm characterizes the majority of users.
-
-\begin{figure}[h]
-	\centering
-	\begin{subfigure}{0.48\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{stylometry_pca.png}
-		\caption{PCA projection of stylometric embeddings colored by K-means clusters ($k=5$).}
-		\label{fig:stylometry_pca}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}{0.48\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{stylometry_cluster_hist.png}
-		\caption{Distribution of posts across stylometric clusters ($k=5$).}
-		\label{fig:stylometry_hist}
-	\end{subfigure}
-	\caption{Stylometric clustering analysis results.}
-	\label{fig:stylometry_combined}
-\end{figure}
-
-% ------------------------
-\subsection{Temporal Posting Patterns} We evaluated temporal posting behavior using monthly and day-of-week distribution features. Silhouette analysis suggested $k=2$ as the optimal clustering configuration (0.264). However, cluster distribution revealed that the vast majority of users fall into a single dominant temporal regime, with only a small subgroup exhibiting distinct temporal behavior. This indicates that posting rhythm is largely homogeneous across the platform, with limited evidence of strong temporal segmentation. Consequently, temporal features were treated descriptively rather than used as a primary clustering dimension in downstream analysis.
-
-% ------------------------
-\subsubsection{Activity-Based Clustering}
-
-User engagement intensity was captured using:
-
-\begin{itemize}
-	\item Total posts
-	\item Active days
-	\item Lifespan (days)
-	\item Posts per active day
-\end{itemize}
-
-After standardization, silhouette analysis showed strong separability (0.519 at $k=2$). We selected $k=4$ (0.508) to model engagement tiers while maintaining high cluster quality.
-
-\begin{figure}[h]
-	\centering
-	\begin{subfigure}{0.48\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{activity_pca.png}
-		\caption{PCA projection of activity features ($k=4$).}
-		\label{fig:activity_pca}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}{0.48\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{activity_cluster_hist.png}
-		\caption{Distribution of users across activity clusters.}
-		\label{fig:activity_hist}
-	\end{subfigure}
-	\caption{Activity clustering analysis results.}
-	\label{fig:activity_combined}
-\end{figure}
-
-Clear separation indicates strong stratification of users into low, moderate, high, and highly intensive engagement tiers.
-
-% ----------------------------------------------------
-\subsection{Topic Modeling and Labeling} To identify thematic structure in Truth Social posts, we implemented a semantic topic modeling pipeline combining sentence embeddings, matrix factorization, and LLM-based labeling. \paragraph{Feature Representation.} Each post was encoded using the Sentence-Transformers model \texttt{all-MiniLM-L6-v2}, producing 384-dimensional sentence embeddings. The embeddings were L2-normalized to operate in cosine space, allowing semantically similar posts to be close in vector space. This approach captures contextual meaning beyond simple keyword frequency. \paragraph{Topic Extraction.} We applied Non-negative Matrix Factorization (NMF) to extract latent topics from the embedding matrix. Since NMF requires non-negative inputs, negative embedding values were clamped to zero before factorization. We initially experimented with $K=30$ topics; however, qualitative inspection revealed overlapping and semantically redundant themes. Reducing the model to $K=20$ produced more coherent and distinct topic groupings. The resulting post-topic matrix was normalized so each post forms a probabilistic topic distribution. \paragraph{Representative Posts and Labeling.} To interpret each topic, we selected the top 15 posts with the highest topic weight as representative examples. These exemplars were provided to a locally hosted LLM (LLaMA3 via Ollama), which was prompted to generate a concise 3–6 word topic label without explanation or punctuation. This ensured consistent and human-readable labels across topics. \paragraph{Dominant Topic Assignment.} Each post was assigned a dominant topic via $\arg\max$ over its topic mixture. Figure~\ref{fig:post_dist} shows the distribution of posts across topics. \begin{figure}[h] \centering \includegraphics[width=\linewidth]{post_distribution.png} \caption{Distribution of posts by dominant topic.} \label{fig:post_dist} \end{figure} To examine user-level engagement, we computed the average topic weight per author and considered a topic present if its mean weight exceeded 0.05. The number of users associated with each topic is shown in Figure~\ref{fig:user_dist}. \begin{figure}[h] \centering \includegraphics[width=\linewidth]{user_distribution.png} \caption{Number of users associated with each topic (average weight $\geq 0.05$).} \label{fig:user_dist} \end{figure} \paragraph{Observations.} Both the post-level and user-level distributions exhibit a highly similar and strongly right-skewed structure. The same set of dominant political topics account for the majority of both posts and participating users. The close alignment between the two distributions suggests that high-volume topics are not driven by a small number of highly active users, but rather reflect broad engagement across the user base. Conversely, niche topics remain marginal both in post volume and in user participation. Overall, the results indicate that thematic dominance is consistent at both the content and user levels. 
-
-	
-	
 \section{Empirical Characterization of Truthfulness Dynamics}
 
 We first define a user-level temporal truthfulness measure and then
@@ -546,12 +457,30 @@ neighborhood information, as formalized in the following section.
 
 
 
-\section{Feature Representation}
 
-All feature types were introduced in the Feature Extraction section.
-Here, we describe how they are converted into numerical vectors and
-integrated into the temporal graph neural network.
 
+
+
+\section{Features}
+\subsection{Post Level Features}
+In this subsection we introduced features obtained on single post level, additionaly to the statment certenty resulting frome the statment classefier.
+
+
+\subsubsection{Post Level Emotion Classifikation}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{pictures_vincent/emotion.png}
+	\caption{Distribution of Emotions Among Posts Classified as Statements}
+	\label{fig:emotion}
+\end{figure}
+Emotion-Based Feature Enrichment
+To further enrich the post-level feature set, we apply a pretrained emotion classifier \cite{hartmann2022emotionenglish} to each post, assigning one of seven discrete emotion labels: neutral, anger, fear, joy, surprise, sadness, and disgust. As shown in the left panel of Figure \ref{fig:emotion} , the corpus is heavily skewed toward neutral expressions ($~37\%$)
+The right panel reveals a striking pattern in the conditional false-statement rate P(FALSE | Emotion): emotionally charged categories exhibit substantially elevated misinformation rates compared to neutral content. Anger yields the highest false rate ($~16.5\%$), followed by surprise ($~14\%$) and disgust ($~14\%$), whereas joy and neutral posts show the lowest rates ($~5.5\%$ and $~10.5\%$, respectively). 
+This suggests a clear association between affective arousal and factual inaccuracy, making the predicted emotion label — alongside its confidence scores across all seven classes — a theoretically motivated and empirically supported feature for downstream false-statement classification.
+%To enrich the raw Truth Social dataset, we implemented additional feature extraction pipelines in the following Jupyter notebooks: \texttt{truthsocial\_stylometry\_and\_temporal\_features.ipynb} and \texttt{truthsocial\_topic\_modeling\_and\_labeling.ipynb}. The final processed data set includes both metadata and the derived behavioral, stylistic, and semantic features.
+
+% ----------------------------------------------------
 \subsection{Text-to-Vector Transformation}
 
 Raw comment text is transformed into a fixed-dimensional numerical
@@ -569,7 +498,94 @@ This ensures stable semantic representations and prevents
 overfitting, while the projection layer allows task-specific
 adaptation of the embedding space.
 
-\subsection{Numerical Encoding of Structured Features}
+\subsection{Behavioral Features}
+
+Behavioral modeling was decomposed into three dimensions: writing style, temporal rhythm, and activity intensity.
+
+% ------------------------
+\subsubsection{Stylometric Clustering}
+
+To capture writing style independent of topic, we used character-level TF-IDF representations (3–5 grams), preserving casing to retain stylistic signals such as punctuation, capitalization, and emoji usage.
+
+The sparse TF-IDF matrix was reduced using Truncated SVD ($50$ components) and L2-normalized to operate in cosine space. Silhouette evaluation over $k \in \{4,\dots,9\}$ selected $k=5$ (0.182) as the optimal number of clusters. K-means was applied to obtain the final \texttt{style\_cluster}.
+
+\paragraph{Visualization and Cluster Distribution}
+
+The stylometric embedding was projected into two dimensions using PCA (Figure~\ref{fig:stylometry_pca}), revealing partially separable stylistic regions with expected overlap in high-dimensional linguistic data. 
+
+The cluster distribution (Figure~\ref{fig:stylometry_hist}) shows one dominant writing style, two moderately represented groups, and two smaller clusters capturing rare or outlier stylistic patterns. Overall, while stylistic variation exists, a prevailing communication norm characterizes the majority of users.
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{stylometry_pca.png}
+		\caption{PCA projection of stylometric embeddings colored by K-means clusters ($k=5$).}
+		\label{fig:stylometry_pca}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{stylometry_cluster_hist.png}
+		\caption{Distribution of posts across stylometric clusters ($k=5$).}
+		\label{fig:stylometry_hist}
+	\end{subfigure}
+	\caption{Stylometric clustering analysis results.}
+	\label{fig:stylometry_combined}
+\end{figure}
+
+% ------------------------
+\subsection{Temporal Posting Patterns} We evaluated temporal posting behavior using monthly and day-of-week distribution features. Silhouette analysis suggested $k=2$ as the optimal clustering configuration (0.264). However, cluster distribution revealed that the vast majority of users fall into a single dominant temporal regime, with only a small subgroup exhibiting distinct temporal behavior. This indicates that posting rhythm is largely homogeneous across the platform, with limited evidence of strong temporal segmentation. Consequently, temporal features were treated descriptively rather than used as a primary clustering dimension in downstream analysis.
+
+% ------------------------
+\subsubsection{Activity-Based Clustering}
+
+User engagement intensity was captured using:
+
+\begin{itemize}
+	\item Total posts
+	\item Active days
+	\item Lifespan (days)
+	\item Posts per active day
+\end{itemize}
+
+After standardization, silhouette analysis showed strong separability (0.519 at $k=2$). We selected $k=4$ (0.508) to model engagement tiers while maintaining high cluster quality.
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{activity_pca.png}
+		\caption{PCA projection of activity features ($k=4$).}
+		\label{fig:activity_pca}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}{0.48\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{activity_cluster_hist.png}
+		\caption{Distribution of users across activity clusters.}
+		\label{fig:activity_hist}
+	\end{subfigure}
+	\caption{Activity clustering analysis results.}
+	\label{fig:activity_combined}
+\end{figure}
+
+Clear separation indicates strong stratification of users into low, moderate, high, and highly intensive engagement tiers.
+
+% ----------------------------------------------------
+\subsection{Topic Modeling and Labeling} To identify thematic structure in Truth Social posts, we implemented a semantic topic modeling pipeline combining sentence embeddings, matrix factorization, and LLM-based labeling. \paragraph{Feature Representation.} Each post was encoded using the Sentence-Transformers model \texttt{all-MiniLM-L6-v2}, producing 384-dimensional sentence embeddings. The embeddings were L2-normalized to operate in cosine space, allowing semantically similar posts to be close in vector space. This approach captures contextual meaning beyond simple keyword frequency. \paragraph{Topic Extraction.} We applied Non-negative Matrix Factorization (NMF) to extract latent topics from the embedding matrix. Since NMF requires non-negative inputs, negative embedding values were clamped to zero before factorization. We initially experimented with $K=30$ topics; however, qualitative inspection revealed overlapping and semantically redundant themes. Reducing the model to $K=20$ produced more coherent and distinct topic groupings. The resulting post-topic matrix was normalized so each post forms a probabilistic topic distribution. \paragraph{Representative Posts and Labeling.} To interpret each topic, we selected the top 15 posts with the highest topic weight as representative examples. These exemplars were provided to a locally hosted LLM (LLaMA3 via Ollama), which was prompted to generate a concise 3–6 word topic label without explanation or punctuation. This ensured consistent and human-readable labels across topics. \paragraph{Dominant Topic Assignment.} Each post was assigned a dominant topic via $\arg\max$ over its topic mixture. Figure~\ref{fig:post_dist} shows the distribution of posts across topics. \begin{figure}[h] \centering \includegraphics[width=\linewidth]{post_distribution.png} \caption{Distribution of posts by dominant topic.} \label{fig:post_dist} \end{figure} To examine user-level engagement, we computed the average topic weight per author and considered a topic present if its mean weight exceeded 0.05. The number of users associated with each topic is shown in Figure~\ref{fig:user_dist}. \begin{figure}[h] \centering \includegraphics[width=\linewidth]{user_distribution.png} \caption{Number of users associated with each topic (average weight $\geq 0.05$).} \label{fig:user_dist} \end{figure} \paragraph{Observations.} Both the post-level and user-level distributions exhibit a highly similar and strongly right-skewed structure. The same set of dominant political topics account for the majority of both posts and participating users. The close alignment between the two distributions suggests that high-volume topics are not driven by a small number of highly active users, but rather reflect broad engagement across the user base. Conversely, niche topics remain marginal both in post volume and in user participation. Overall, the results indicate that thematic dominance is consistent at both the content and user levels. 
+
+
+
+
+\subsection{Feature Representation}
+
+All feature types were introduced in the Feature Extraction section.
+Here, we describe how they are converted into numerical vectors and
+integrated into the temporal graph neural network.
+
+
+\subsubsection{Numerical Encoding of Structured Features}
 
 All non-textual features are converted into numerical form prior to
 model integration. Categorical variables are represented using
@@ -581,7 +597,7 @@ retained as continuous values, and multi-cluster assignments are
 encoded as normalized frequency vectors.
 
 
-\subsection{Feature Concatenation}
+\subsubsection{Feature Concatenation}
 
 After conversion, all components are concatenated into a single
 high-dimensional feature vector:
