@@ -98,25 +98,11 @@
 
 \begin{abstract}
 	
-	We investigate temporal truthfulness dynamics on Truth Social using a
-	directed follower network and their historical posts.
-	We define a rolling user-level truthfulness measure and analyze its
-	structural and temporal patterns. Empirical findings reveal wave-like
-	growth, localized clustering of untruthful users, and strong
-	exposure-dependent transition risks.
-	
-	To model these dynamics, we propose a Temporal Graph Neural Network
-	(TGNN) that integrates semantic text representations, recurrent
-	temporal updates, and graph-based aggregation. Without relying on
-	previous truthfulness labels, the model achieves a Macro-F1 of 0.855,
-	demonstrating that structural and content-based signals provide
-	substantial predictive power. Incorporating prior labels further
-	improves performance (Macro-F1 0.910), highlighting strong temporal
-	persistence. 
-	
-	Our results emphasize the importance of jointly modeling semantic,
-	structural, and temporal signals when predicting behavioral evolution
-	in polarized online environments.
+This paper studies the temporal and structural dynamics of untruthful behavior on Truth Social. Moving beyond post-level classification, we introduce a rolling user-level truthfulness measure that captures short-term behavioral persistence across time. Empirical analysis reveals wave-like growth patterns, pronounced local clustering of untruthful users, and strong exposure-dependent transition risks: users following untruthful accounts exhibit substantially higher probabilities of becoming untruthful themselves, particularly during early expansion phases.
+
+To model these dynamics, we propose a Temporal Graph Neural Network (TGNN) that jointly integrates semantic text representations, behavioral features, recurrent temporal updates, and graph-based message passing. Without relying on prior truthfulness labels, the model achieves a Macro-F1 score of 0.855, demonstrating that structural and content-based signals alone provide substantial predictive power. Incorporating past user-level truthfulness further improves performance to a Macro-F1 of 0.910, highlighting strong temporal persistence in behavioral patterns.
+
+Our findings emphasize that untruthful behavior in polarized online environments is not purely individual but emerges from the interaction of semantic content, temporal reinforcement, and network exposure. The proposed framework offers both descriptive insight into behavioral diffusion and a scalable foundation for network-aware moderation strategies. All code and implementation details are publicly available in our GitHub repository: \texttt{truegraphdynamics2026}.
 	
 \end{abstract}
 
