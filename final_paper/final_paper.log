@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.2) (preloaded format=pdflatex 2021.8.25)  19 FEB 2026 22:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.2) (preloaded format=pdflatex 2021.8.25)  19 FEB 2026 22:59
 entering extended mode
 **./final_paper.tex
 (final_paper.tex
@@ -678,162 +678,166 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 <pictures_vincent/thresholds.png, id=243, 992.70876pt x 792.9625pt>
 File: pictures_vincent/thresholds.png Graphic file (type png)
 <use pictures_vincent/thresholds.png>
-Package pdftex.def Info: pictures_vincent/thresholds.png  used on input line 26
-8.
+Package pdftex.def Info: pictures_vincent/thresholds.png  used on input line 27
+0.
 (pdftex.def)             Requested size: 216.0022pt x 172.52844pt.
  [6 <./pictures_vincent/thresholds.png>]
-<untruthful_user_percentage_over_time.png, id=252, 578.16pt x 361.35pt>
+[7]
+<untruthful_user_percentage_over_time.png, id=262, 578.16pt x 361.35pt>
 File: untruthful_user_percentage_over_time.png Graphic file (type png)
 <use untruthful_user_percentage_over_time.png>
 Package pdftex.def Info: untruthful_user_percentage_over_time.png  used on inpu
-t line 338.
+t line 340.
 (pdftex.def)             Requested size: 180.0pt x 112.49704pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[7]
-<clustering_metrics_over_time.png, id=265, 578.16pt x 361.35pt>
+<clustering_metrics_over_time.png, id=264, 578.16pt x 361.35pt>
 File: clustering_metrics_over_time.png Graphic file (type png)
 <use clustering_metrics_over_time.png>
 Package pdftex.def Info: clustering_metrics_over_time.png  used on input line 3
-52.
+54.
 (pdftex.def)             Requested size: 180.0pt x 112.49704pt.
  [8 <./untruthful_user_percentage_over_time.png> <./clustering_metrics_over_tim
 e.png>]
 <risk_ratio_over_time.png, id=274, 578.16pt x 361.35pt>
 File: risk_ratio_over_time.png Graphic file (type png)
 <use risk_ratio_over_time.png>
-Package pdftex.def Info: risk_ratio_over_time.png  used on input line 376.
+Package pdftex.def Info: risk_ratio_over_time.png  used on input line 378.
 (pdftex.def)             Requested size: 180.0pt x 112.49704pt.
  [9 <./risk_ratio_over_time.png>]
 <pictures_vincent/emotion.png, id=281, 1193.45876pt x 491.8375pt>
 File: pictures_vincent/emotion.png Graphic file (type png)
 <use pictures_vincent/emotion.png>
-Package pdftex.def Info: pictures_vincent/emotion.png  used on input line 425.
+Package pdftex.def Info: pictures_vincent/emotion.png  used on input line 428.
 (pdftex.def)             Requested size: 288.0011pt x 118.68881pt.
- [10 <./pictures_vincent/emotion.png>]
-<stylometry_pca.png, id=295, 524.96124pt x 394.47375pt>
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[10] [11 <./pictures_vincent/emotion.png>]
+<stylometry_pca.png, id=300, 524.96124pt x 394.47375pt>
 File: stylometry_pca.png Graphic file (type png)
 <use stylometry_pca.png>
-Package pdftex.def Info: stylometry_pca.png  used on input line 474.
+Package pdftex.def Info: stylometry_pca.png  used on input line 475.
 (pdftex.def)             Requested size: 172.79846pt x 129.84567pt.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 475.
+(Font)              <10> on input line 476.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 475.
+(Font)              <7> on input line 476.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 475.
-<stylometry_cluster_hist.png, id=296, 783.92876pt x 289.08pt>
+(Font)              <5> on input line 476.
+<stylometry_cluster_hist.png, id=301, 783.92876pt x 289.08pt>
 File: stylometry_cluster_hist.png Graphic file (type png)
 <use stylometry_cluster_hist.png>
-Package pdftex.def Info: stylometry_cluster_hist.png  used on input line 481.
+Package pdftex.def Info: stylometry_cluster_hist.png  used on input line 482.
 (pdftex.def)             Requested size: 172.79846pt x 63.71689pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[11]
-<activity_pca.png, id=303, 516.93124pt x 392.46625pt>
+ [12 <./stylometry_pca.png> <./stylometry_cluster_hist.png>]
+<activity_pca.png, id=310, 516.93124pt x 392.46625pt>
 File: activity_pca.png Graphic file (type png)
 <use activity_pca.png>
-Package pdftex.def Info: activity_pca.png  used on input line 510.
+Package pdftex.def Info: activity_pca.png  used on input line 511.
 (pdftex.def)             Requested size: 172.79846pt x 131.19104pt.
-<activity_cluster_hist.png, id=304, 761.84625pt x 295.1025pt>
+<activity_cluster_hist.png, id=311, 761.84625pt x 295.1025pt>
 File: activity_cluster_hist.png Graphic file (type png)
 <use activity_cluster_hist.png>
-Package pdftex.def Info: activity_cluster_hist.png  used on input line 517.
+Package pdftex.def Info: activity_cluster_hist.png  used on input line 518.
 (pdftex.def)             Requested size: 172.79846pt x 66.93103pt.
+ [13 <./activity_pca.png> <./activity_cluster_hist.png>]
+<post_distribution.png, id=320, 845.1575pt x 342.27875pt>
+File: post_distribution.png Graphic file (type png)
+<use post_distribution.png>
+Package pdftex.def Info: post_distribution.png  used on input line 529.
+(pdftex.def)             Requested size: 360.0pt x 145.79817pt.
+<user_distribution.png, id=322, 832.10875pt x 341.275pt>
+File: user_distribution.png Graphic file (type png)
+<use user_distribution.png>
+Package pdftex.def Info: user_distribution.png  used on input line 529.
+(pdftex.def)             Requested size: 360.0pt x 147.64627pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[12 <./stylometry_pca.png> <./stylometry_cluster_hist.png>] [13 <./activity_pca
-.png> <./activity_cluster_hist.png>]
-<post_distribution.png, id=322, 845.1575pt x 342.27875pt>
-File: post_distribution.png Graphic file (type png)
-<use post_distribution.png>
-Package pdftex.def Info: post_distribution.png  used on input line 528.
-(pdftex.def)             Requested size: 360.0pt x 145.79817pt.
-<user_distribution.png, id=324, 832.10875pt x 341.275pt>
-File: user_distribution.png Graphic file (type png)
-<use user_distribution.png>
-Package pdftex.def Info: user_distribution.png  used on input line 528.
-(pdftex.def)             Requested size: 360.0pt x 147.64627pt.
- [14 <./post_distribution.png> <./user_distribution.png>]
-Overfull \hbox (9.61232pt too wide) in paragraph at lines 554--556
+[14] [15 <./post_distribution.png> <./user_distribution.png>]
+Overfull \hbox (9.61232pt too wide) in paragraph at lines 555--557
 \T1/lmr/m/n/10.95 (-20) After con-ver-sion, all com-po-nents are con-cate-nated
  into a sin-gle high-dimensional
  []
 
-[15] [16] [17]
-<plots/trial_2/loss_curve.png, id=349, 462.528pt x 346.896pt>
+[16] [17]
+<plots/trial_2/loss_curve.png, id=350, 462.528pt x 346.896pt>
 File: plots/trial_2/loss_curve.png Graphic file (type png)
 <use plots/trial_2/loss_curve.png>
-Package pdftex.def Info: plots/trial_2/loss_curve.png  used on input line 697.
+Package pdftex.def Info: plots/trial_2/loss_curve.png  used on input line 698.
 (pdftex.def)             Requested size: 161.9989pt x 121.5001pt.
-<plots/trial_2/f1_curve.png, id=350, 462.528pt x 346.896pt>
+<plots/trial_2/f1_curve.png, id=351, 462.528pt x 346.896pt>
 File: plots/trial_2/f1_curve.png Graphic file (type png)
 <use plots/trial_2/f1_curve.png>
-Package pdftex.def Info: plots/trial_2/f1_curve.png  used on input line 698.
+Package pdftex.def Info: plots/trial_2/f1_curve.png  used on input line 699.
 (pdftex.def)             Requested size: 161.9989pt x 121.5001pt.
-<plots/trial_2/precision_curve.png, id=351, 462.528pt x 346.896pt>
+<plots/trial_2/precision_curve.png, id=352, 462.528pt x 346.896pt>
 File: plots/trial_2/precision_curve.png Graphic file (type png)
 <use plots/trial_2/precision_curve.png>
 Package pdftex.def Info: plots/trial_2/precision_curve.png  used on input line 
-699.
+700.
 (pdftex.def)             Requested size: 161.9989pt x 121.5001pt.
-<plots/trial_2/recall_curve.png, id=352, 462.528pt x 346.896pt>
+<plots/trial_2/recall_curve.png, id=353, 462.528pt x 346.896pt>
 File: plots/trial_2/recall_curve.png Graphic file (type png)
 <use plots/trial_2/recall_curve.png>
-Package pdftex.def Info: plots/trial_2/recall_curve.png  used on input line 700
+Package pdftex.def Info: plots/trial_2/recall_curve.png  used on input line 701
 .
 (pdftex.def)             Requested size: 161.9989pt x 121.5001pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 702--702
+Underfull \hbox (badness 10000) in paragraph at lines 703--703
 []\T1/lmr/m/n/10.95 (+20) Figure 11: |Train-ing dy-nam-ics with the fol-low-ing
  paramters:
  []
 
 
-Overfull \hbox (3.07196pt too wide) in paragraph at lines 706--717
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (3.07196pt too wide) in paragraph at lines 707--718
 []\T1/lmr/m/n/10.95 (-20) The best-performing con-fig-u-ra-tion un-der this con
 -straint (\T1/lmtt/m/n/10.95 threshold=0.35\T1/lmr/m/n/10.95 (-20) ,
  []
 
-[18 <./plots/trial_2/loss_curve.png> <./plots/trial_2/f1_curve.png> <./plots/tr
-ial_2/precision_curve.png> <./plots/trial_2/recall_curve.png>]
-<plots/trial_6/loss_curve.png, id=362, 462.528pt x 346.896pt>
+[18]
+<plots/trial_6/loss_curve.png, id=358, 462.528pt x 346.896pt>
 File: plots/trial_6/loss_curve.png Graphic file (type png)
 <use plots/trial_6/loss_curve.png>
-Package pdftex.def Info: plots/trial_6/loss_curve.png  used on input line 736.
+Package pdftex.def Info: plots/trial_6/loss_curve.png  used on input line 737.
 (pdftex.def)             Requested size: 161.9989pt x 121.5001pt.
-<plots/trial_6/f1_curve.png, id=363, 462.528pt x 346.896pt>
+<plots/trial_6/f1_curve.png, id=359, 462.528pt x 346.896pt>
 File: plots/trial_6/f1_curve.png Graphic file (type png)
 <use plots/trial_6/f1_curve.png>
-Package pdftex.def Info: plots/trial_6/f1_curve.png  used on input line 737.
+Package pdftex.def Info: plots/trial_6/f1_curve.png  used on input line 738.
 (pdftex.def)             Requested size: 161.9989pt x 121.5001pt.
-<plots/trial_6/precision_curve.png, id=364, 462.528pt x 346.896pt>
+<plots/trial_6/precision_curve.png, id=360, 462.528pt x 346.896pt>
 File: plots/trial_6/precision_curve.png Graphic file (type png)
 <use plots/trial_6/precision_curve.png>
 Package pdftex.def Info: plots/trial_6/precision_curve.png  used on input line 
-738.
+739.
 (pdftex.def)             Requested size: 161.9989pt x 121.5001pt.
-<plots/trial_6/recall_curve.png, id=365, 462.528pt x 346.896pt>
+<plots/trial_6/recall_curve.png, id=361, 462.528pt x 346.896pt>
 File: plots/trial_6/recall_curve.png Graphic file (type png)
 <use plots/trial_6/recall_curve.png>
-Package pdftex.def Info: plots/trial_6/recall_curve.png  used on input line 739
+Package pdftex.def Info: plots/trial_6/recall_curve.png  used on input line 740
 .
 (pdftex.def)             Requested size: 161.9989pt x 121.5001pt.
 
-Overfull \hbox (31.44368pt too wide) in paragraph at lines 746--751
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (31.44368pt too wide) in paragraph at lines 747--752
 []\T1/lmr/m/n/10.95 (-20) When in-cor-po-rat-ing the pre-vi-ous truth-ful-ness 
 state of a user (\T1/lmtt/m/n/10.95 use_past_y=True\T1/lmr/m/n/10.95 (-20) ),
  []
 
-[19 <./plots/trial_6/loss_curve.png> <./plots/trial_6/f1_curve.png> <./plots/tr
-ial_6/precision_curve.png> <./plots/trial_6/recall_curve.png>] [20]
-(final_paper.bbl [21]
+[19 <./plots/trial_2/loss_curve.png> <./plots/trial_2/f1_curve.png> <./plots/tr
+ial_2/precision_curve.png> <./plots/trial_2/recall_curve.png>] [20 <./plots/tri
+al_6/loss_curve.png> <./plots/trial_6/f1_curve.png> <./plots/trial_6/precision_
+curve.png> <./plots/trial_6/recall_curve.png>] [21] (final_paper.bbl
 Underfull \hbox (badness 10000) in paragraph at lines 13--18
 []\T1/lmr/m/n/10.95 (+20) Jochen Hart-mann.  Emo-tion en-glish distilroberta-
  []
@@ -846,14 +850,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 13--18
 
 ) [22] (final_paper.aux)
 Package rerunfilecheck Info: File `final_paper.out' has not changed.
-(rerunfilecheck)             Checksum: 2026D4173E2BA5B4D555A5FA56A461F1;6900.
+(rerunfilecheck)             Checksum: 82CFBA26D03813469AE6F08871CE988F;6904.
  ) 
 Here is how much of TeX's memory you used:
- 14316 strings out of 479300
- 222486 string characters out of 2853552
- 547893 words of memory out of 3000000
- 31190 multiletter control sequences out of 15000+200000
- 505031 words of font info for 219 fonts, out of 3000000 for 9000
+ 14322 strings out of 479300
+ 222591 string characters out of 2853552
+ 547894 words of memory out of 3000000
+ 31193 multiletter control sequences out of 15000+200000
+ 509460 words of font info for 221 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  71i,9n,77p,3050b,587s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Users/johan/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ec.en
@@ -872,12 +876,13 @@ nts/type1/public/lm/lmmi10.pfb><C:/Users/johan/AppData/Local/Programs/MiKTeX 2.
 TeX 2.9/fonts/type1/public/lm/lmr10.pfb><C:/Users/johan/AppData/Local/Programs/
 MiKTeX 2.9/fonts/type1/public/lm/lmr12.pfb><C:/Users/johan/AppData/Local/Progra
 ms/MiKTeX 2.9/fonts/type1/public/lm/lmr8.pfb><C:/Users/johan/AppData/Local/Prog
-rams/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Users/johan/AppData/Local/
-Programs/MiKTeX 2.9/fonts/type1/public/lm/lmsy8.pfb><C:/Users/johan/AppData/Loc
-al/Programs/MiKTeX 2.9/fonts/type1/public/lm/lmtt10.pfb>
-Output written on final_paper.pdf (25 pages, 2138948 bytes).
+rams/MiKTeX 2.9/fonts/type1/public/lm/lmri10.pfb><C:/Users/johan/AppData/Local/
+Programs/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Users/johan/AppData/Lo
+cal/Programs/MiKTeX 2.9/fonts/type1/public/lm/lmsy8.pfb><C:/Users/johan/AppData
+/Local/Programs/MiKTeX 2.9/fonts/type1/public/lm/lmtt10.pfb>
+Output written on final_paper.pdf (25 pages, 2155937 bytes).
 PDF statistics:
- 460 PDF objects out of 1000 (max. 8388607)
+ 464 PDF objects out of 1000 (max. 8388607)
  92 named destinations out of 1000 (max. 500000)
- 56709 words of extra memory for PDF output out of 61914 (max. 10000000)
+ 58757 words of extra memory for PDF output out of 61914 (max. 10000000)
 

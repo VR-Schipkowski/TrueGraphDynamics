@@ -229,7 +229,9 @@ filters:
 
 After filtering, all retained users are embedded in a structurally 
 connected subgraph and associated with temporally valid activity 
-records. The resulting dataset forms the basis for subsequent analysis.
+records. The resulting dataset forms the basis for subsequent analysis. 
+
+Before modeling user-level temporal dynamics, we first require reliable post-level truthfulness signals from which higher-level behavioral measures can be derived. We therefore begin with a baseline approach that operates directly at the post level, aiming to identify false statements within individual pieces of content. This initial step establishes the labeling foundation necessary for subsequent user-level aggregation and temporal modeling.
 
 \section{Baseline Models for False Statement Detection at the Post Level}
 
@@ -374,13 +376,13 @@ risk ratio over time.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.5\linewidth]{risk_ratio_over_time.png}
-	\caption{Risk ratio of becoming untruthful given exposure to untruthful neighbors.}
+	\caption{Risk ratio of becoming untruthful given exposure to untruthful neighbours.}
 	\label{fig:risk_ratio_over_time}
 \end{figure}
 
 In early intervals, the risk ratio exceeds 8 and in some
 cases surpasses 15, indicating a strong association between
-exposure and subsequent behavioral change. As overall
+exposure and subsequent behavioural change. As overall
 prevalence increases, the risk ratio declines but remains
 above 1 for most transitions, consistent with saturation
 effects in diffusion-like processes.
@@ -390,7 +392,7 @@ effects in diffusion-like processes.
 The empirical analysis reveals three consistent patterns:
 
 \begin{itemize}
-	\item \textbf{Temporal persistence:} Untruthful behavior
+	\item \textbf{Temporal persistence:} Untruthful behaviour
 	evolves in waves rather than independently across users.
 	
 	\item \textbf{Localized clustering:} Untruthful users form
@@ -405,7 +407,7 @@ Together, these findings indicate that user-level truthfulness
 exhibits both temporal dependence and network-structured
 correlation. These observations motivate predictive models
 that jointly incorporate sequential history and structural
-neighborhood information, as formalized in the following section.
+neighbourhood information, to support this graph based approach it is important to enhance it with post based as well as cluster based features.
 
 
 
@@ -414,6 +416,7 @@ neighborhood information, as formalized in the following section.
 
 
 \section{Features}
+In this section, we describe the feature representations used for modelling. We distinguish between \emph{post-level features} and \emph{behavioural features}. Post-level features are extracted directly from individual posts. In contrast, behavioural features operate at the user level and summarize longitudinal activity patterns. These behavioural dimensions are derived through clustering procedures that group users into structurally similar profiles.
 \subsection{Post-Level Features}
 
 In this section, we describe the post-level features used in our model. These features are extracted directly from individual posts and capture lexical, semantic, and structural characteristics. We leverage the predictions of the statement classifier together with the output distribution of the baseline false-statement model. Instead of relying on hard class labels, we incorporate the full softmax probability distribution over all classes as features, thereby preserving uncertainty information.
@@ -530,9 +533,7 @@ Clear separation indicates strong stratification of users into low, moderate, hi
 
 \subsection{Feature Representation}
 
-All feature types were introduced in the Feature Extraction section.
-Here, we describe how they are converted into numerical vectors and
-integrated into the temporal graph neural network.
+The preceding subsections introduced the different post-level and behavioral feature types. We now describe how these components are transformed into numerical representations and combined for integration into the Temporal Graph Neural Network.
 
 
 \subsubsection{Numerical Encoding of Structured Features}
