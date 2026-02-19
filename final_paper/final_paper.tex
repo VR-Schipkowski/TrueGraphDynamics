@@ -63,24 +63,26 @@
 	\centering
 	\vspace*{3cm}
 	
-	{\Huge\bfseries Temporal Trust \& Sentiment Dynamics in TrueSocial\par}
+	{\Huge\bfseries Temporal Trust \& Sentiment Dynamics in Truth Social\par}
 	\vspace{0.5cm}
 	{\Large Deep Learning for Social Analytics \par}
 	
 	\vfill
 	
+
+
+	
 	{\large
-		Author One$^{1}$ \quad Author Two$^{2}$ \par}
+		 Vincent Ridder $^{1}$ \quad Johann Strunck $^{2}$ \quad Sargunpreet Kaur $^{3}$  \quad 	Yunus Aras $^{4}$\par}
 	
 	\vspace{0.5cm}
 	
 	{\normalsize
-		$^{1}$Affiliation One \par
-		$^{2}$Affiliation Two \par}
+	}
 	
 	\vspace{0.5cm}
 	
-	{\texttt{email1@domain.com, email2@domain.com}\par}
+	{\texttt{vincent.ridder@tuhh.de, johann.strunck@tuhh.de,sargunpreet.kaur@tuhh.de,yunus.aras@tuhh.de}\par}
 	
 	\vspace*{2cm}
 	
@@ -123,48 +125,81 @@
 \section{Introduction}
 
 Online social platforms play a central role in shaping political
-discourse and information diffusion. While mainstream platforms have
-been widely studied, alternative networks with distinct moderation
-policies and ideologically concentrated user bases remain less
-underexplored. Understanding how behavioral dynamics evolve in such
-environments requires jointly modeling content, temporal persistence,
-and network structure.
+discourse and information diffusion. A persistent and widely
+documented challenge within these environments is the rapid spread of
+false or misleading information, which can distort public discourse
+and reinforce polarization. While mainstream platforms have been
+extensively examined in this context, alternative networks with
+distinct moderation policies and ideologically concentrated user
+bases pose a particularly important challenge: how can moderation
+strategies be designed to promote and safeguard truthfulness in
+environments where governance is comparatively limited? Addressing
+this question requires models that can identify emerging untruthful
+behavior early, assess exposure-driven risks, and support scalable
+flagging mechanisms tailored to such settings.
 
 Truth Social, launched in 2022 by Trump Media \& Technology Group
 following the suspension of former U.S. President Donald J. Trump
 from major platforms after the January 6 United States Capitol attack,
 positions itself as an alternative network emphasizing limited content
-moderation and political expression. Its politically engaged and
-relatively homogeneous user base provides a natural setting for
-studying network-structured behavioral dynamics in polarized contexts.
+moderation and political expression. Such governance structures raise
+important questions about how truthfulness can be maintained in
+environments where regulatory intervention is comparatively
+constrained. Rather than merely characterizing behavioral dynamics,
+our objective is to examine how data-driven moderation frameworks can
+be developed to detect, flag, and ultimately mitigate the spread of
+false information in these settings. By analyzing how untruthful
+behavior emerges, clusters, and propagates through the follower
+network, we aim to inform the design of network-aware monitoring and
+early-warning systems capable of supporting scalable truthfulness
+guarantees in politically polarized online communities.
+
 
 In this work, we analyze temporal truthfulness dynamics within a
 large-scale Truth Social follower network. We construct a rolling
 user-level truthfulness measure and empirically demonstrate wave-like
 growth patterns, localized structural clustering, and strong
-exposure-dependent transition risks.
+exposure-dependent transition risks. These findings suggest that the
+spread of untruthful content is neither random nor isolated, but
+structured and temporally persistent, underscoring the need for
+models that jointly capture content, time, and network exposure.
 
 Motivated by these observations, we propose a Temporal Graph Neural
 Network (TGNN) that integrates semantic text embeddings, recurrent
-temporal state updates, and follower-network aggregation. We evaluate
-the model under two settings: a non-autoregressive configuration that
-excludes prior truthfulness labels, and an autoregressive variant that
-includes them. The non-autoregressive model achieves strong predictive
-performance, indicating that structural and semantic signals alone are
-highly informative. Incorporating prior labels further improves
-performance, revealing substantial temporal persistence.
+temporal state updates, and follower-network aggregation. Beyond
+predictive accuracy, our framework is designed to support moderation
+objectives by identifying high-risk users, estimating exposure-driven
+escalation probabilities, and enabling scalable flagging strategies.
+We evaluate the model under two settings: a non-autoregressive
+configuration that excludes prior truthfulness labels, and an
+autoregressive variant that includes them. The non-autoregressive
+model achieves strong predictive performance, indicating that
+structural and semantic signals alone provide substantial information
+about emerging untruthful behavior. Incorporating prior labels further
+improves performance, revealing strong temporal persistence that can
+be leveraged for proactive monitoring.
 
-Together, our findings highlight the complementary roles of content,
-network exposure, and temporal dependence in modeling behavioral
-evolution in politically polarized online environments.
+Together, our findings demonstrate how content characteristics,
+network exposure, and temporal dependence jointly shape the dynamics
+of untruthful information diffusion in politically polarized online
+environments. Beyond descriptive insights, this work advances a
+model-driven framework for proactive moderation in such settings.
+By integrating structural, semantic, and temporal signals, our
+approach enables scalable identification of high-risk users and
+exposure-driven escalation patterns, thereby supporting targeted
+flagging and early intervention strategies. More broadly, our results
+contribute to the development of network-aware moderation systems
+designed to strengthen information integrity and promote sustained
+truthfulness in alternative social media ecosystems.
+
+
 
 
 	
 \section{Data}
 
-
 The dataset used in this study is derived from the publicly released 
-corpus described in \cite{source_article}. Because Truth Social does 
+corpus described in \cite{Gerard2023}. Because Truth Social does 
 not provide a public API, data were collected via automated web 
 scraping of publicly accessible user profiles.
 
@@ -243,9 +278,56 @@ After filtering, all retained users are embedded in a structurally
 connected subgraph and associated with temporally valid activity 
 records. The resulting dataset forms the basis for subsequent analysis.
 
+\subsection{Obtaining Labels}
+
+For our task, we required classification labels for individual social media posts.
+Since manual annotation aswell as High level LLM calls are costly, we used a multi-stage pipeline to reduce expensive API calls.
+
+\subsection{Statement Classifier}
+
+We generated 75,129 weak labels in three classes:
+\texttt{no statement}, \texttt{true}, and \texttt{false}.
+Only $6\%$ of posts contained factual statements.
+
+Using these weak labels, we trained binary classefier based on a BERT-based uncased model with a LoRA adapter.
+
+The classifier achieved a precision of $P = 003$ with a recall $R = 0.89$
+for the statment class. We then used the classefier to predikt all post, only considdering the predikted statments to further classifikation by the high level LLM. Resulting in a reducktion of of about $82\%$.
+With that we were able to lable the hole data set for 60 euros.
 
 \section{Feature Engineering}
+\subsection{Post Level Features}
+In this subsection we introduced features obtained on single post level, additionaly to the statment certenty resulting frome the statment classefier.
 
+\subsubsection{Text Level Trutfullnes distribution}
+We trained as a baseline a false statement classifier to predict whether a statement is false or belongs to another category. To generate training labels, we first prefiltered posts using a statement classifier and then used ChatGPT to produce soft probabilistic outputs for each post. Specifically, ChatGPT returned a probability distribution over the three classes: \texttt{FALSE}, \texttt{TRUE}, and \texttt{NO\_STATEMENT}. These soft labels were used to fine-tune a transformer-based sequence classification model (DeBERTa-v3-base) for three-class classification.
+
+Instead of hard targets, each training instance was represented as a normalized label distribution. The model was trained using Soft Focal Loss to mitigate class imbalance, with class weights computed from the average label distribution in the training set. Training was conducted for 10 epochs.
+
+Evaluation on the validation set (5,004 samples) yielded an overall accuracy of 79.1\% and a macro-F1 score of 0.653. Performance on the dominant class (\texttt{NO\_STATEMENT}) was strong (F1 = 0.869), while the minority classes showed moderate performance (\texttt{TRUE}: F1 = 0.528; \texttt{FALSE}: F1 = 0.561). These results indicate robust detection of non-statements and reasonable discrimination between true and false factual statements despite substantial class imbalance.
+
+To flag a statement as false, we applied a threshold on the predicted false probability. Figure~\ref{fig:threshold} illustrates the precision, recall, and F1-score of the false statement classifier as a function of this threshold. As the threshold increases, precision improves significantly while recall decreases, demonstrating the classic trade-off between these metrics. This thresholding mechanism allows the pipeline to flexibly balance the reduction of false positives—thereby minimizing unnecessary downstream processing—and the retention of true false statements to maintain recall. Selecting an intermediate threshold enables efficient filtering of posts, reducing the volume of data forwarded to the computationally expensive final labeling stage while preserving detection quality.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.6\linewidth]{pictures_vincent/thresholds.png}
+	\caption{Precision-recall trade-off based on thresholding the predicted false probability.}
+	\label{fig:threshold}
+\end{figure}
+
+As a feature we used the post level distribution.
+\subsubsection{Post Level Emotion Classifikation}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{pictures_vincent/emotion.png}
+	\caption{Distribution of Emotions Among Posts Classified as Statements}
+	\label{fig:emotion}
+\end{figure}
+Emotion-Based Feature Enrichment
+To further enrich the post-level feature set, we apply a pretrained emotion classifier \cite{hartmann2022emotionenglish} to each post, assigning one of seven discrete emotion labels: neutral, anger, fear, joy, surprise, sadness, and disgust. As shown in the left panel of Figure \ref{fig:emotion} , the corpus is heavily skewed toward neutral expressions ($~37\%$)
+The right panel reveals a striking pattern in the conditional false-statement rate P(FALSE | Emotion): emotionally charged categories exhibit substantially elevated misinformation rates compared to neutral content. Anger yields the highest false rate ($~16.5\%$), followed by surprise ($~14\%$) and disgust ($~14\%$), whereas joy and neutral posts show the lowest rates ($~5.5\%$ and $~10.5\%$, respectively). 
+This suggests a clear association between affective arousal and factual inaccuracy, making the predicted emotion label — alongside its confidence scores across all seven classes — a theoretically motivated and empirically supported feature for downstream false-statement classification.
 %To enrich the raw Truth Social dataset, we implemented additional feature extraction pipelines in the following Jupyter notebooks: \texttt{truthsocial\_stylometry\_and\_temporal\_features.ipynb} and \texttt{truthsocial\_topic\_modeling\_and\_labeling.ipynb}. The final processed data set includes both metadata and the derived behavioral, stylistic, and semantic features.
 
 % ----------------------------------------------------
@@ -376,13 +458,13 @@ prevalence, clustering, and transition dynamics.
 
 \subsection{Temporal Evolution of Untruthful Behavior}
 
-Figure~\ref{fig:untruthful_users_over_time} shows the number
+Figure~\ref{fig:untruthful_users_over_time} shows the percentage
 of users classified as untruthful across time intervals.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.5\linewidth]{untruthful_users_over_time.png}
-	\caption{Number of untruthful users over time.}
+	\includegraphics[width=0.5\linewidth]{untruthful_user_percentage_over_time.png}
+	\caption{Percentage of untruthful users over time.}
 	\label{fig:untruthful_users_over_time}
 \end{figure}
 
@@ -421,9 +503,7 @@ regions without complete global segregation of the network.
 
 \subsection{Exposure and Transition Risk}
 
-To quantify exposure effects, we compute the risk ratio of
-transitioning from truthful to untruthful in interval $t+1$
-conditional on following at least one untruthful user at time $t$.
+To quantify exposure effects, we compute the risk ratio of the probability of transitioning from truthful to untruthful in interval $t+1$, conditional on following at least one untruthful user at time $t$ to the probability of transitioning from truthful to untruthful in interval $t+1$, conditional on following no untruthful user at time $t$.
 
 Figure~\ref{fig:risk_ratio_over_time} shows the resulting
 risk ratio over time.
@@ -625,8 +705,8 @@ threshold $\tau$ is applied:
 \]
 
 We evaluate multiple thresholds and select the one that maximizes
-validation macro-F1. The optimal threshold is reported alongside
-the final results.
+validation macro-F1.
+
 
 \subsection{Evaluation Metrics}
 
@@ -650,8 +730,8 @@ network, avoiding autoregressive dependence on prior labels.
 	\includegraphics[width=0.45\linewidth]{plots/trial_2/f1_curve.png}
 	\includegraphics[width=0.45\linewidth]{plots/trial_2/precision_curve.png}
 	\includegraphics[width=0.45\linewidth]{plots/trial_2/recall_curve.png}
-	\caption{Training dynamics of the temporal graph neural network 
-		without temporal self-dependence.}
+	\caption{Training dynamics with the following paramters: \texttt{threshold=0.35}, \texttt{use\_graph=True}, 
+		\texttt{use\_comments=True}.}
 \end{figure}
 
 
@@ -667,18 +747,20 @@ time, the extremely high precision and recall for the truthful class
 demonstrate that the model does not collapse into trivial majority 
 class prediction despite the underlying imbalance.
 
-These results show that combining content-based representations with 
-structural graph aggregation substantially improves predictive 
-performance even in the absence of explicit temporal self-dependence.
+%These results show that combining content-based representations with 
+%structural graph aggregation substantially improves predictive 
+%performance even in the absence of explicit temporal self-dependence.
 
-The training dynamics further confirm stable convergence. The loss 
-decreases consistently across epochs and stabilizes after roughly 
-20 epochs without signs of instability. Precision and recall for 
-both classes improve steadily, with a noticeable increase in 
-untruthful-class precision during later epochs, suggesting that the 
-model progressively learns discriminative structural patterns. 
-The Macro-F1 score stabilizes above 0.85 toward the end of training, 
-indicating reliable generalization on the validation set.
+%The training dynamics further confirm stable convergence. The loss 
+%decreases consistently across epochs and stabilizes after roughly 
+%20 epochs without signs of instability. Precision and recall for 
+%both classes improve steadily, with a noticeable increase in 
+%untruthful-class precision during later epochs, suggesting that the 
+%model progressively learns discriminative structural patterns. 
+%The Macro-F1 score stabilizes above 0.85 toward the end of training, 
+%indicating reliable generalization on the validation set.
+
+When comparing the graph-augmented model to the version without explicit graph features, we observe only a marginal improvement in macro F1 score (0.851). This limited gain may be attributed to the comment-based features already encoding substantial relational information, thereby reducing the additional signal provided by explicit graph structure. Furthermore, the use of mean pooling for neighborhood aggregation may have contributed to the modest performance increase. Mean aggregation assigns equal weight to all neighbors and can dilute highly informative signals, potentially leading to over-smoothing and reduced discriminative power of node representations.
 
 
 \begin{figure}[h]
@@ -702,10 +784,7 @@ strong temporal persistence of user-level truthfulness behavior.
 However, incorporating previous truthfulness values requires access to 
 ground-truth labels from earlier time steps. If these labels are already 
 available and reliable, the prediction problem becomes largely 
-autoregressive. In such a scenario, one could directly exploit temporal 
-label persistence without necessarily relying on the structural modeling 
-capacity of the graph neural network. In the extreme case where 
-truthfulness is continuously labeled over time, the need for graph-based 
+autoregressive. In such a scenario,one could directly calculate the labels instead of relying on the structural modeling capacity of the graph neural network. In the extreme case where truthfulness is continuously labeled over time, the need for graph-based 
 inference diminishes substantially, as the historical labels themselves 
 carry strong predictive power.
 
@@ -717,6 +796,86 @@ which then identifies high-risk users for further verification.
 Such a semi-supervised strategy preserves the value of structural and 
 content-based modeling while limiting manual annotation effort.
 
+
+\section{Conclusion and Outlook}
+
+In this work, we investigated temporal truthfulness dynamics within a large-scale 
+Truth Social follower network and proposed a Temporal Graph Neural Network (TGNN) 
+to model user-level behavioral evolution. Our empirical analysis revealed three 
+consistent structural patterns. First, untruthful behavior evolves in temporally 
+correlated waves rather than through isolated individual shifts. Second, 
+untruthful users form locally cohesive regions within the follower network, 
+indicating structural concentration without complete polarization. Third, 
+exposure to untruthful neighbors is strongly associated with elevated transition 
+risk, particularly during early growth phases, suggesting that network context 
+plays a substantial role in behavioral evolution.
+
+From a predictive perspective, feature-based user flagging achieved high 
+performance even without incorporating prior truthfulness states. The strong 
+Macro-F1 score demonstrates that semantic content, behavioral attributes, and 
+structural information jointly provide substantial predictive power. 
+Interestingly, explicit graph message passing only marginally improved 
+performance compared to feature-only modeling. This limited gain may indicate 
+that important relational signals are already encoded within comment-level and 
+engagement features. Additionally, the use of mean aggregation in the GraphSAGE 
+framework may have diluted highly informative neighbor signals, potentially 
+reducing the discriminative capacity of structural propagation.
+
+Incorporating prior truthfulness states significantly increased predictive 
+performance, highlighting strong temporal persistence. This suggests that users 
+who are flagged as untruthful are substantially more likely to be flagged again 
+in subsequent intervals. While this autoregressive component improves accuracy, 
+it also raises conceptual questions. If historical labels are continuously 
+available, prediction becomes largely persistence-driven, reducing the marginal 
+contribution of structural modeling. In realistic moderation settings, however, 
+exhaustive labeling is infeasible. A selective labeling strategy—where the model 
+identifies high-risk users for targeted review—may offer a scalable compromise 
+between predictive performance and annotation effort.
+
+Several limitations must be acknowledged. First, the follower network represents 
+an induced subgraph of publicly accessible accounts and is treated as static 
+over the observation period. Structural changes in the network could not be 
+captured. Second, the observed wave-like dynamics may partially reflect 
+exogenous political events rather than purely endogenous diffusion processes. 
+Third, the binary truthfulness labels used in this study were generated by a 
+large language model rather than human annotators. While automated labeling 
+enables large-scale and internally consistent annotation, it may introduce 
+systematic biases or misclassifications compared to expert human judgment. 
+Consequently, the reported performance should be interpreted relative to the 
+consistency of the automated labeling scheme rather than as an absolute measure 
+of real-world truthfulness detection accuracy. Incorporating human-validated 
+annotations or hybrid human–AI labeling approaches would strengthen future 
+evaluations.
+
+Future research can extend this work in several directions. More expressive 
+graph neural network architectures—such as attention-based aggregation or 
+influence-weighted message passing—may better capture asymmetric exposure 
+effects and prevent information dilution. Dynamic graph formulations could 
+model evolving follower relationships more realistically. 
+
+Another important direction concerns intervention analysis. Simulating the 
+removal of users after their first flagging could help assess whether early 
+intervention reduces cluster formation or merely shifts untruthful activity 
+elsewhere in the network. Such counterfactual simulations would move the 
+framework from pure prediction toward policy evaluation.
+
+It would also be valuable to examine how the proposed approach performs on 
+less politically polarized platforms. Truth Social represents a highly 
+ideologically concentrated environment, and it remains unclear whether similar 
+temporal persistence and structural clustering patterns emerge in more 
+heterogeneous or less politically heated networks.
+
+Finally, the strong performance gain from incorporating past truthfulness 
+labels warrants deeper investigation. Understanding whether this persistence 
+is driven by stable individual traits, reinforcement through network feedback 
+loops, or platform-level dynamics would provide important insight into the 
+mechanisms underlying behavioral escalation.
+
+Overall, this study demonstrates that semantic, behavioral, temporal, and 
+structural signals jointly shape the evolution of untruthful behavior in 
+online networks. By integrating these components into a unified modeling 
+framework, we provide both descriptive insight and a foundation for scalable, 
+network-aware moderation strategies in polarized digital environments.
 
 
 	\bibliographystyle{plainnat}
