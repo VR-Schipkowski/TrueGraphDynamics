@@ -414,11 +414,11 @@ neighborhood information, as formalized in the following section.
 
 
 \section{Features}
-\subsection{Post Level Features}
-In this subsection we introduced features obtained on single post level, additionaly to the statment certenty resulting frome the statment classefier.
+\subsection{Post-Level Features}
 
+In this section, we describe the post-level features used in our model. These features are extracted directly from individual posts and capture lexical, semantic, and structural characteristics. We leverage the predictions of the statement classifier together with the output distribution of the baseline false-statement model. Instead of relying on hard class labels, we incorporate the full softmax probability distribution over all classes as features, thereby preserving uncertainty information.
 
-\subsubsection{Post Level Emotion Classifikation}
+\subsubsection{Post-Level Emotion Classification}
 
 \begin{figure}[!h]
 	\centering
@@ -426,29 +426,27 @@ In this subsection we introduced features obtained on single post level, additio
 	\caption{Distribution of Emotions Among Posts Classified as Statements}
 	\label{fig:emotion}
 \end{figure}
-Emotion-Based Feature Enrichment
-To further enrich the post-level feature set, we apply a pretrained emotion classifier \cite{hartmann2022emotionenglish} to each post, assigning one of seven discrete emotion labels: neutral, anger, fear, joy, surprise, sadness, and disgust. As shown in the left panel of Figure \ref{fig:emotion} , the corpus is heavily skewed toward neutral expressions ($~37\%$)
-The right panel reveals a striking pattern in the conditional false-statement rate P(FALSE | Emotion): emotionally charged categories exhibit substantially elevated misinformation rates compared to neutral content. Anger yields the highest false rate ($~16.5\%$), followed by surprise ($~14\%$) and disgust ($~14\%$), whereas joy and neutral posts show the lowest rates ($~5.5\%$ and $~10.5\%$, respectively). 
-This suggests a clear association between affective arousal and factual inaccuracy, making the predicted emotion label — alongside its confidence scores across all seven classes — a theoretically motivated and empirically supported feature for downstream false-statement classification.
-%To enrich the raw Truth Social dataset, we implemented additional feature extraction pipelines in the following Jupyter notebooks: \texttt{truthsocial\_stylometry\_and\_temporal\_features.ipynb} and \texttt{truthsocial\_topic\_modeling\_and\_labeling.ipynb}. The final processed data set includes both metadata and the derived behavioral, stylistic, and semantic features.
 
-% ----------------------------------------------------
-\subsection{Text-to-Vector Transformation}
+To generate an additional post-level feature, we apply a pretrained emotion classifier \cite{hartmann2022emotionenglish} to each post.
+The model assigns one of seven discrete emotion labels: neutral, anger, fear, joy, surprise, sadness, and disgust.
 
-Raw post text is transformed into a fixed-dimensional numerical
-representation using a pre-trained transformer model.
+As shown in the left panel of Figure~\ref{fig:emotion}, the corpus is heavily skewed toward neutral expressions ($\sim 37\%$).
+The right panel presents the conditional false-statement rate $P(\text{FALSE} \mid \text{Emotion})$.
+Emotionally charged categories exhibit substantially higher misinformation rates compared to neutral content.
+Anger shows the highest false rate ($\sim 16.5\%$), followed by surprise ($\sim 14\%$) and disgust ($\sim 14\%$). In contrast, joy and neutral posts display considerably lower rates ($\sim 5.5\%$ and $\sim 10.5\%$, respectively).
 
-For each post, the text is tokenized and passed through the
-transformer. The contextualized embedding of the \texttt{[CLS]}
-token is extracted as a holistic representation of the post.
-To reduce dimensionality and adapt the embedding to the downstream
-model, the transformer output is passed through a feed-forward
-projection network, producing a compact fixed-size text vector.
+These findings indicate a systematic association between affective intensity and factual inaccuracy.
+Consequently, we include both the predicted emotion label and the corresponding softmax confidence scores across all seven emotion classes as features for downstream false-statement classification.
 
-The transformer parameters are kept frozen during training.
-This ensures stable semantic representations and prevents
-overfitting, while the projection layer allows task-specific
-adaptation of the embedding space.
+\subsubsection{Text-to-Vector Transformation}
+
+Raw post text is converted into a fixed-dimensional numerical representation using a pre-trained transformer model.
+
+For each post, the text is tokenized and fed into the transformer encoder. We extract the contextualized embedding of the \texttt{[CLS]} token, which serves as a holistic representation of the entire post.
+
+To reduce dimensionality and adapt the representation to the downstream classification task, the transformer output is passed through a feed-forward projection network. This projection layer produces a compact, fixed-size text vector that is used as input to the subsequent model components.
+
+The transformer parameters remain frozen during training. This stabilizes the semantic representations and mitigates overfitting, while the learnable projection layer enables task-specific adaptation of the embedding space.
 
 \subsection{Behavioral Features}
 
