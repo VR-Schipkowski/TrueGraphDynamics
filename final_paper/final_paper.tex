@@ -198,7 +198,7 @@ truthfulness in alternative social media ecosystems.
 	
 \section{Data}
 
-The dataset used in this study is derived from the publicly released 
+The dataset used in this paper is derived from the publicly released 
 corpus described in \cite{Gerard2023}. Because Truth Social does 
 not provide a public API, data were collected via automated web 
 scraping of publicly accessible user profiles.
@@ -253,7 +253,7 @@ by a limited subset of highly active users.
 
 \paragraph{Temporal Activity.}
 To characterize aggregate engagement dynamics, we compute the total 
-number of posts per week (Figure~\ref{fig:truths_per_week}). Weekly 
+number of posts per week (~\ref{fig:truths_per_week}). Weekly 
 activity fluctuates over time, indicating non-stationary behavior and 
 motivating temporally aware modeling approaches.
 
@@ -278,34 +278,37 @@ After filtering, all retained users are embedded in a structurally
 connected subgraph and associated with temporally valid activity 
 records. The resulting dataset forms the basis for subsequent analysis.
 
-\section{Baseline Model}
+\section{Baseline Models for False Statement Detection at the Post Level}
 
+Detecting false statements in social media posts is inherently challenging. Determining factual accuracy often requires deep contextual understanding and background knowledge. Statements can be partially true, misleading, or dependent on specific temporal, cultural, or scientific contexts.
+
+Social media posts frequently include sarcasm, exaggeration, or ambiguous phrasing, further complicating automated detection. Even human annotators face difficulties, as verifying claims may require expert knowledge or reliable external sources, making the process time-consuming and resource-intensive.
+
+To address these challenges, we propose a two-stage baseline pipeline. First, a lightweight statement classifier preselects posts likely to contain factual content. Second, a truth classifier estimates the probability that each post is true or false. Based on predefined probability thresholds, posts are either automatically classified or forwarded to a more powerful LLM or human experts for final verification.
 
 \subsection{Obtaining Labels}
 
-For our task, we required classification labels for individual social media posts.
-Since manual annotation aswell as High level LLM calls are costly, we used a multi-stage pipeline to reduce expensive API calls.
+Since our dataset lacks labels, we used ChatGPT-5 to automatically generate them. ChatGPT-5 was chosen for its improved reasoning, contextual understanding, and factual consistency compared to earlier versions, making it well-suited for generating high-quality labels. Labels (\texttt{TRUE}, \texttt{FALSE}, \texttt{NO\_STATEMENT}) were created in three steps:
+
+\begin{enumerate}
+	\item Posts from the first three timestamps were labeled using ChatGPT-5 and used to train the statement classifier.
+	\item The classifier was applied to prefilter posts, afterwards ChatGPT-5 generated soft probability distributions over the three classes for each post. These distributions were used to train the truth classifier.
+	\item A streamlined API call with ChatGPT-5 produced labels for the remaining prefiltered posts.
+\end{enumerate}
+
+The cost of API calls depends on the number of tokens sent and returned. Returning full probability distributions is more expensive; the total cost of the labeling process was €70.
 
 \subsection{Statement Classifier}
 
-We generated 75,129 weak labels in three classes:
-\texttt{no statement}, \texttt{true}, and \texttt{false}.
-Only $6\%$ of posts contained factual statements.
+The initial labeled set contained 75,129 posts, of which only 6\% were factual statements. To focus on these, we fine-tuned a binary BERT-based uncased model with a LoRA adapter to separate statements from non-statements. The classifier achieved a precision of $0.3$ and a recall of $0.89$ for the statement class. While only one in three predicted statements was correct, this reduced the dataset size by roughly 82\%, producing a higher proportion of factual statements for training the truth classifier.
 
-Using these weak labels, we trained binary classefier based on a BERT-based uncased model with a LoRA adapter.
+\subsection{Truth Classifier}
 
-The classifier achieved a precision of $P = 003$ with a recall $R = 0.89$
-for the statment class. We then used the classefier to predikt all post, only considdering the predikted statments to further classifikation by the high level LLM. Resulting in a reducktion of of about $82\%$.
-With that we were able to lable the hole data set for 60 euros.
+To train the truth classifier, posts prefiltered by the statement classifier were labeled with soft probability distributions over \texttt{FALSE}, \texttt{TRUE}, and \texttt{NO\_STATEMENT} using ChatGPT-5. These soft labels were used to fine-tune a transformer-based sequence classification model (\texttt{DeBERTa-v3-base}).
 
-\subsubsection{Text Level Trutfullnes distribution}
-We trained as a baseline a false statement classifier to predict whether a statement is false or belongs to another category. To generate training labels, we first prefiltered posts using a statement classifier and then used ChatGPT to produce soft probabilistic outputs for each post. Specifically, ChatGPT returned a probability distribution over the three classes: \texttt{FALSE}, \texttt{TRUE}, and \texttt{NO\_STATEMENT}. These soft labels were used to fine-tune a transformer-based sequence classification model (DeBERTa-v3-base) for three-class classification.
+Each training instance was represented as a normalized label distribution rather than a hard target. The model was trained using Soft Focal Loss to mitigate class imbalance, with class weights derived from the average label distribution in the training set, over 10 epochs.
 
-Instead of hard targets, each training instance was represented as a normalized label distribution. The model was trained using Soft Focal Loss to mitigate class imbalance, with class weights computed from the average label distribution in the training set. Training was conducted for 10 epochs.
-
-Evaluation on the validation set (5,004 samples) yielded an overall accuracy of 79.1\% and a macro-F1 score of 0.653. Performance on the dominant class (\texttt{NO\_STATEMENT}) was strong (F1 = 0.869), while the minority classes showed moderate performance (\texttt{TRUE}: F1 = 0.528; \texttt{FALSE}: F1 = 0.561). These results indicate robust detection of non-statements and reasonable discrimination between true and false factual statements despite substantial class imbalance.
-
-To flag a statement as false, we applied a threshold on the predicted false probability. Figure~\ref{fig:threshold} illustrates the precision, recall, and F1-score of the false statement classifier as a function of this threshold. As the threshold increases, precision improves significantly while recall decreases, demonstrating the classic trade-off between these metrics. This thresholding mechanism allows the pipeline to flexibly balance the reduction of false positives—thereby minimizing unnecessary downstream processing—and the retention of true false statements to maintain recall. Selecting an intermediate threshold enables efficient filtering of posts, reducing the volume of data forwarded to the computationally expensive final labeling stage while preserving detection quality.
+Evaluation on a validation set of $5,004$ samples yielded an overall accuracy of $79.1\%$ and a macro-F1 score of $0.653$. Performance on the dominant class (\texttt{NO\_STATEMENT}) was strong (F1 = 0.869), while the minority classes showed moderate performance (\texttt{TRUE}: $F1 = 0.528$; \texttt{FALSE}: $F1 = 0.561$). This demonstrates robust detection of non-statements and weak discrimination between true and false statements despite substantial class imbalance.
 
 \begin{figure}[!h]
 	\centering
@@ -314,9 +317,11 @@ To flag a statement as false, we applied a threshold on the predicted false prob
 	\label{fig:threshold}
 \end{figure}
 
-As a feature we used the post level distribution.
 
+To flag a post as false, we applied a threshold on the predicted false probability. Figure~\ref{fig:threshold} illustrates precision, recall, and F1-score as a function of this threshold. Higher thresholds increase precision at the cost of recall, allowing the pipeline to flexibly balance false positive reduction and the retention of true false statements. Selecting an intermediate threshold efficiently filters posts, reducing the volume forwarded to computationally expensive final verification while maintaining detection quality.
+To achieve a meaningful recall of $70\%$, this pipeline step would have a precision of approximately $25\%$, meaning that for each correctly flagged false statement, there would be roughly three false positives. Combining both steps of the pipeline further reduces both recall and precision.
 
+While the model could likely be improved with more training data, we focus on investigating how network information, as well as other text-based and cluster-based features, could enhance detection. Since our main interest is identifying users who spread false statements, we shift our approach to flagging users, as described in the next section.
 
 
 
@@ -328,10 +333,10 @@ analyze its structural and temporal behavior within the follower network.
 
 \subsection{Temporal User-Level Truthfulness}
 
-Let $c_{u,i}$ denote a comment authored by user $u$
+Let $c_{u,i}$ denote a post authored by user $u$
 in time interval $i$, and let $\ell(c_{u,i}) \in \{0,1\}$
 be its binary truthfulness label, where $0$ represents
-a truthful comment and $1$ otherwise.
+a truthful post and $1$ otherwise.
 
 To capture short-term behavioral persistence rather than isolated
 posts, we define a rolling aggregation over three consecutive
@@ -343,12 +348,12 @@ intervals. For each user $u$ and time $t$, we compute:
 	\, 1.0 \right),
 \end{equation}
 
-where $C_u(i)$ denotes the set of comments authored by
+where $C_u(i)$ denotes the set of posts authored by
 user $u$ in interval $i$.
 
 The resulting score $y_u(t) \in [0,1]$ represents the
 recent proportion of untruthful content, smoothed over time.
-This rolling formulation reduces noise from single comments
+This rolling formulation reduces noise from single posts
 and reflects short-term behavioral tendencies.
 
 For graph-level analysis, we derive a binary state variable:
@@ -369,8 +374,11 @@ prevalence, clustering, and transition dynamics.
 
 \subsection{Temporal Evolution of Untruthful Behavior}
 
-Figure~\ref{fig:untruthful_users_over_time} shows the percentage
-of users classified as untruthful across time intervals.
+Untruthful prevalence exhibits a two-stage growth pattern,
+with an initial rapid increase followed by a second, higher
+peak and subsequent gradual decline. The sharp expansion
+phase suggests temporally correlated transitions rather than
+independent behavioral shifts, which can be seen in Figure~\ref{fig:untruthful_users_over_time}. 
 
 \begin{figure}[h]
 	\centering
@@ -379,21 +387,12 @@ of users classified as untruthful across time intervals.
 	\label{fig:untruthful_users_over_time}
 \end{figure}
 
-Untruthful prevalence exhibits a two-stage growth pattern,
-with an initial rapid increase followed by a second, higher
-peak and subsequent gradual decline. The sharp expansion
-phase suggests temporally correlated transitions rather than
-independent behavioral shifts.
-
-Such wave-like dynamics are consistent with diffusion-like processes, though alternative explanations such as exogenous events or platform-level shifts may also contribute.
 
 \subsection{Structural Concentration}
 
 To assess whether untruthful users cluster in the network,
 we compute (i) assortativity with respect to $d_u(t)$ and
-(ii) the fraction of edges connecting two untruthful users.
-
-Figure~\ref{fig:clustering_metrics} shows both metrics over time.
+(ii) the fraction of edges connecting two untruthful users, which can be seen in Figure~\ref{fig:clustering_metrics}.
 
 \begin{figure}[h]
 	\centering
@@ -483,12 +482,12 @@ This suggests a clear association between affective arousal and factual inaccura
 % ----------------------------------------------------
 \subsection{Text-to-Vector Transformation}
 
-Raw comment text is transformed into a fixed-dimensional numerical
+Raw post text is transformed into a fixed-dimensional numerical
 representation using a pre-trained transformer model.
 
-For each comment, the text is tokenized and passed through the
+For each post, the text is tokenized and passed through the
 transformer. The contextualized embedding of the \texttt{[CLS]}
-token is extracted as a holistic representation of the comment.
+token is extracted as a holistic representation of the post.
 To reduce dimensionality and adapt the embedding to the downstream
 model, the transformer output is passed through a feed-forward
 projection network, producing a compact fixed-size text vector.
@@ -611,7 +610,7 @@ This unified vector preserves semantic content, probabilistic
 predictions, behavioral attributes, and interaction statistics
 within a single representation space.
 
-The resulting comment-level vectors serve as input to the comment
+The resulting post-level vectors serve as input to the post
 encoder of the Temporal Graph Neural Network described in the
 following section.
 
@@ -624,20 +623,20 @@ following section.
 
 To capture the joint temporal and structural dynamics of user-level
 truthfulness, we propose a Temporal Graph Neural Network (TGNN)
-that integrates comment-level encoding, temporal state evolution,
+that integrates post-level encoding, temporal state evolution,
 and graph-based message passing within a unified framework.
 
 \subsection{Temporal User Representation}
 
-Within each time interval, a user may produce multiple comments.
-These comment feature vectors are aggregated using a GRU-based
+Within each time interval, a user may produce multiple posts.
+These post feature vectors are aggregated using a GRU-based
 encoder to produce a fixed-size representation summarizing the
-user’s activity during that interval. If no comments are present,
+user’s activity during that interval. If no posts are present,
 a zero vector is used.
 
 Each user maintains a hidden state that evolves sequentially across
 time intervals. The state update is implemented using a GRUCell that
-integrates the current interval’s comment embedding, the previous
+integrates the current interval’s post embedding, the previous
 hidden state, and optionally the prior truthfulness signal. This
 recurrent formulation captures behavioral persistence and temporal
 dependencies in user activity.
@@ -747,13 +746,13 @@ network, avoiding autoregressive dependence on prior labels.
 	\includegraphics[width=0.45\linewidth]{plots/trial_2/precision_curve.png}
 	\includegraphics[width=0.45\linewidth]{plots/trial_2/recall_curve.png}
 	\caption{Training dynamics with the following paramters: \texttt{threshold=0.35}, \texttt{use\_graph=True}, 
-		\texttt{use\_comments=True}.}
+		\texttt{use\_posts=True}.}
 \end{figure}
 
 
 The best-performing configuration under this constraint 
 (\texttt{threshold=0.35}, \texttt{use\_graph=True}, 
-\texttt{use\_comments=True}) achieved a Macro-F1 score of 0.855 and 
+\texttt{use\_posts=True}) achieved a Macro-F1 score of 0.855 and 
 an overall accuracy of 0.967. The F1 score for the untruthful class 
 was 0.728, while the truthful class achieved an F1 score of 0.982. 
 Precision for untruthful users reached 0.75 with a recall of 
@@ -776,7 +775,7 @@ class prediction despite the underlying imbalance.
 %The Macro-F1 score stabilizes above 0.85 toward the end of training, 
 %indicating reliable generalization on the validation set.
 
-When comparing the graph-augmented model to the version without explicit graph features, we observe only a marginal improvement in macro F1 score (0.851). This limited gain may be attributed to the comment-based features already encoding substantial relational information, thereby reducing the additional signal provided by explicit graph structure. Furthermore, the use of mean pooling for neighborhood aggregation may have contributed to the modest performance increase. Mean aggregation assigns equal weight to all neighbors and can dilute highly informative signals, potentially leading to over-smoothing and reduced discriminative power of node representations.
+When comparing the graph-augmented model to the version without explicit graph features, we observe only a marginal improvement in macro F1 score (0.851). This limited gain may be attributed to the post-based features already encoding substantial relational information, thereby reducing the additional signal provided by explicit graph structure. Furthermore, the use of mean pooling for neighborhood aggregation may have contributed to the modest performance increase. Mean aggregation assigns equal weight to all neighbors and can dilute highly informative signals, potentially leading to over-smoothing and reduced discriminative power of node representations.
 
 
 \begin{figure}[h]
@@ -820,9 +819,7 @@ Truth Social follower network and proposed a Temporal Graph Neural Network (TGNN
 to model user-level behavioral evolution. Our empirical analysis revealed three 
 consistent structural patterns. First, untruthful behavior evolves in temporally 
 correlated waves rather than through isolated individual shifts. Second, 
-untruthful users form locally cohesive regions within the follower network, 
-indicating structural concentration without complete polarization. Third, 
-exposure to untruthful neighbors is strongly associated with elevated transition 
+exposure to untruthful neighbors is associated with elevated transition 
 risk, particularly during early growth phases, suggesting that network context 
 plays a substantial role in behavioral evolution.
 
@@ -832,7 +829,7 @@ Macro-F1 score demonstrates that semantic content, behavioral attributes, and
 structural information jointly provide substantial predictive power. 
 Interestingly, explicit graph message passing only marginally improved 
 performance compared to feature-only modeling. This limited gain may indicate 
-that important relational signals are already encoded within comment-level and 
+that important relational signals are already encoded within post-level and 
 engagement features. Additionally, the use of mean aggregation in the GraphSAGE 
 framework may have diluted highly informative neighbor signals, potentially 
 reducing the discriminative capacity of structural propagation.
@@ -853,7 +850,7 @@ an induced subgraph of publicly accessible accounts and is treated as static
 over the observation period. Structural changes in the network could not be 
 captured. Second, the observed wave-like dynamics may partially reflect 
 exogenous political events rather than purely endogenous diffusion processes. 
-Third, the binary truthfulness labels used in this study were generated by a 
+Third, the binary truthfulness labels used in this paper were generated by a 
 large language model rather than human annotators. While automated labeling 
 enables large-scale and internally consistent annotation, it may introduce 
 systematic biases or misclassifications compared to expert human judgment. 
@@ -869,11 +866,6 @@ influence-weighted message passing—may better capture asymmetric exposure
 effects and prevent information dilution. Dynamic graph formulations could 
 model evolving follower relationships more realistically. 
 
-Another important direction concerns intervention analysis. Simulating the 
-removal of users after their first flagging could help assess whether early 
-intervention reduces cluster formation or merely shifts untruthful activity 
-elsewhere in the network. Such counterfactual simulations would move the 
-framework from pure prediction toward policy evaluation.
 
 It would also be valuable to examine how the proposed approach performs on 
 less politically polarized platforms. Truth Social represents a highly 
@@ -887,7 +879,7 @@ is driven by stable individual traits, reinforcement through network feedback
 loops, or platform-level dynamics would provide important insight into the 
 mechanisms underlying behavioral escalation.
 
-Overall, this study demonstrates that semantic, behavioral, temporal, and 
+Overall, this paper demonstrates that semantic, behavioral, temporal, and 
 structural signals jointly shape the evolution of untruthful behavior in 
 online networks. By integrating these components into a unified modeling 
 framework, we provide both descriptive insight and a foundation for scalable, 
@@ -895,6 +887,6 @@ network-aware moderation strategies in polarized digital environments.
 
 
 	\bibliographystyle{plainnat}
-	\bibliography{references}
+	\bibliography{bibliography}
 	
 \end{document}
